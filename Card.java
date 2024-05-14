@@ -4,6 +4,4 @@ public class Card {
         int value = gVal;
         String suit = gSuit;
     }
-    
-    
 }
