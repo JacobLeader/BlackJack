@@ -11,15 +11,16 @@ public class Deck {
 
     public void createDeck() {
         for (String suit: suits) {
-            for (int i = 0; i < 14; i++) {
+            for (int i = 1; i <= 13; i++) {
                 deck.add(new Card(i, suit));
             }
         }
     }
 
     public void removeCard(int value, String suit) {
+        Card card;
         for (int i = 0; i < deck.size(); i++) {
-            Card card = deck.get(i);
+            card = deck.get(i);
             if (card.getValue() == value && card.getSuit().equals(suit)) {
                 deck.remove(i);
                 break; // dont need to look anymore
@@ -29,5 +30,10 @@ public class Deck {
 
     public void shuffleDeck() {
         Collections.shuffle(deck);
+    }
+
+    // deck is shuffled, so we can just grab the first card
+    public Card getCard() {
+        return deck.remove(0);
     }
 }
