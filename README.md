@@ -1,11 +1,11 @@
                              
-                                            --- NOTES ---
+--- NOTES ---
 
 
 
 
 
-                                            --- RULES ---
+--- RULES ---
                                          
 Card Values:
     Numbered cards (2 through 10) are worth their face value.
