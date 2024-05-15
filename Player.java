@@ -35,31 +35,41 @@ public class Player extends Helpers {
         String input;
 
         System.out.println("Enter your move: ");
+
         while (true) {
-            input = scanner.nextLine().toLowerCase();
+            input = scanner.nextLine();
+            System.out.println("input: " + input);
             System.out.print("\033[H\033[2J");
-            if (input == "S"){
+            if (input.equalsIgnoreCase("S")){
                 return 0;
             }
-            else if (input == "H"){
+            else if (input.equalsIgnoreCase("H")){
+                System.out.println("good boy");
                 return 1;
             }
-            else if (input == "DD"){
+            else if (input.equalsIgnoreCase("DD")){
                 return 2;
             }
-            else if (input == "Spt"){
+            else if (input.equalsIgnoreCase("Spt")){
                 return 3;
             }
-            else if (input == "I"){
+            else if (input.equalsIgnoreCase("I")){
                 return 4;
             }
             else {
                 System.out.println(input + " is not a valid move, please refer to the options below.");
                 showOptions();
+                System.out.println("\nEnter your move: ");
+
             }
         }
     }
-
+    
+    // gets the amount the player wants to bet
+    public int getBet(String betType) {
+        System.out.println("Please place the amount you would like to bet on " + betType);
+        return scanner.nextInt(); // might need a try-catch here
+    }
     public void showOptions() {
         System.out.println("====================================\n" +
                            "|          Blackjack Moves         |\n" +
