@@ -70,6 +70,10 @@ public class Player extends Helpers {
         System.out.println("Please place the amount you would like to bet on " + betType);
         return scanner.nextInt(); // might need a try-catch here
     }
+    public void giveMoney(int amount){
+        money += amount;
+    }
+
     public void showOptions() {
         System.out.println("====================================\n" +
                            "|          Blackjack Moves         |\n" +
