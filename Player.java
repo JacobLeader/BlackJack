@@ -34,11 +34,10 @@ public class Player extends Helpers {
         */ 
         String input;
 
-        System.out.println("Enter your move: ");
         while (true) {
+            System.out.println("Enter your move: ");
             input = scanner.nextLine();
-            System.out.println("input: " + input);
-            // System.out.print("\033[H\033[2J");
+            System.out.print("\033[H\033[2J");
             if (input.equalsIgnoreCase("S")){
                 return 0;
             }
@@ -57,8 +56,6 @@ public class Player extends Helpers {
             else {
                 System.out.println(input + " is not a valid move, please refer to the options below.");
                 showOptions();
-                System.out.println("\nEnter your move: ");
-
             }
         }
     }

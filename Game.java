@@ -19,7 +19,6 @@ public class Game {
             System.out.println("--- NEW GAME ---");
             Deck deck = new Deck();
             int bet = game.player.getBet("this hand");
-            System.out.println("GOT BET" + bet);
             Hand hand = new Hand(bet); // contains the bets
             
             while (move == 1){
@@ -83,7 +82,6 @@ public class Game {
     // handles the players turn
     public static int playerTurn(Hand hand, Deck deck) {
         int move = 1;
-            System.out.println("getting move");
             move = game.player.getMove();
             
             if (move == 0) { // Stand
