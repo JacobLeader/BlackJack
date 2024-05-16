@@ -13,20 +13,26 @@ public class Game {
     }
 
     public static void main(String [] args) {
-        int move = 1;
+        int move;
         game = new Game();
 
         // Each loop represents a round/hand
         while(true) {
+            move = 1;
             System.out.println("--- NEW GAME ---");
             Deck deck = new Deck();
             int bet = game.player.getBet("this hand");
             Hand hand = new Hand(bet); // contains the bets
             
+            hand.giveDealerCard(deck.getCard());
             while (move == 1){
                 move = playerTurn(hand, deck);
             }
 
+            if (move == -1) { // if player busted
+                checkWin(hand);
+                continue;
+            }
             // Dealer's turn
             while (hand.getDealerValue() < 17) {
                 hand.giveDealerCard(deck.getCard());
@@ -34,6 +40,7 @@ public class Game {
             }
             
             int gameStatus = checkWin(hand);
+
             if (gameStatus == 1 || gameStatus == 2) {
                 // WIN
                 game.player.giveMoney(hand.getBet());
@@ -92,10 +99,10 @@ public class Game {
             }
             if (move == 1) { // Hit
                 Card card = deck.getCard();
-                System.out.println("You got a " + card.getValue() + " of " + card.getSuit());
                 hand.givePlayerCard(card);
+                System.out.println("You got a " + card.getValue() + " of " + card.getSuit() + " your card value is " + hand.getPlayerValue());
                 if (checkBust(hand)) {
-                    return 0; // forced out of loop in main, so the game ends
+                    return -1; // forced out of loop in main, so the game ends
                     // return 1;
                 }
             }
