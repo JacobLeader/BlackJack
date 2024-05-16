@@ -1,13 +1,13 @@
-import java.util.ArrayList;
 import java.util.Scanner;
 public class Player extends Helpers {
     // private ArrayList<Card> cards;
-    private int money;
+    int money;
     Scanner scanner;
 
     public Player(int gMoney) {
         // cards = new ArrayList<>();
         money = gMoney;
+        System.out.println("You have $" + money);
         scanner = new Scanner(System.in);
     }
 
@@ -63,7 +63,8 @@ public class Player extends Helpers {
     }
 
     public void giveMoney(int amount){
-        money += amount;
+        money = money + amount;
+        System.out.println("You have $" + money);
     }
 
     public void showOptions() {
