@@ -1,27 +1,14 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 public class Player extends Helpers {
-    private ArrayList<Card> cards;
+    // private ArrayList<Card> cards;
     private int money;
     Scanner scanner;
 
     public Player(int gMoney) {
-        cards = new ArrayList<>();
+        // cards = new ArrayList<>();
         money = gMoney;
         scanner = new Scanner(System.in);
-    }
-
-    public void giveCard(Card card) {
-        cards.add(card);
-    }
-
-    // positive or negative amount
-    public void changeMoney(int amount) {
-        money += amount;
-    }
-
-    public int getPlayerValue() {
-        return getHandValue(cards);
     }
 
     public int getMove() {
