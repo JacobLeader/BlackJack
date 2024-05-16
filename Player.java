@@ -35,16 +35,14 @@ public class Player extends Helpers {
         String input;
 
         System.out.println("Enter your move: ");
-
         while (true) {
             input = scanner.nextLine();
             System.out.println("input: " + input);
-            System.out.print("\033[H\033[2J");
+            // System.out.print("\033[H\033[2J");
             if (input.equalsIgnoreCase("S")){
                 return 0;
             }
             else if (input.equalsIgnoreCase("H")){
-                System.out.println("good boy");
                 return 1;
             }
             else if (input.equalsIgnoreCase("DD")){
@@ -67,9 +65,19 @@ public class Player extends Helpers {
     
     // gets the amount the player wants to bet
     public int getBet(String betType) {
-        System.out.println("Please place the amount you would like to bet on " + betType);
-        return scanner.nextInt(); // might need a try-catch here
+        while (true) {
+            System.out.println("Please place the amount you would like to bet on " + betType);
+            if (scanner.hasNextInt()) {
+                int betAmount = scanner.nextInt();
+                scanner.nextLine();
+                return betAmount;
+            } else {
+                System.out.println("Invalid input. Please enter an integer value.");
+                scanner.next(); // clear invalid input
+            }
+        }
     }
+
     public void giveMoney(int amount){
         money += amount;
     }
