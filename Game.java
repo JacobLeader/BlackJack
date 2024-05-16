@@ -13,10 +13,10 @@ public class Game {
     public static void main(String [] args) {
         int move = -1;
         game = new Game();
+
         // Each loop represents a round/hand
         while(true) {
             Deck deck = new Deck();
-
             int bet = game.player.getBet("this hand");
             Hand hand = new Hand(bet); // contains the bets
 
@@ -29,15 +29,15 @@ public class Game {
 
             if (checkWin() == 1 || checkWin() == 2) {
                 // WIN
+                game.player.giveMoney(hand.getBet());
                 // TODO check which bets the player has, contained in arraylist
             }
             else if (checkWin() == 3) {
                 // TIE
-
             }
             else {
                 // LOSS
-
+                game.player.giveMoney(-1 * hand.getBet());
             }
         }
     }
@@ -48,21 +48,21 @@ public class Game {
         int dealerVal = game.dealer.getDealerValue();
         
         if (playerVal > 21) {
-            System.out.println("Dealer wins");
+            System.out.println("Player Bust!");
             return 0;
         }
         // if dealer busts, and player is still alive
         else if (dealerVal > 21) {
-            System.out.println("Player wins");
+            System.out.println("Dealer Bust!");
             return (playerVal < 21) ? 1 : 2; // if player value is below 21, return win, else return 21
         }
         // if both player and dealer are alive
         else {
             if (playerVal > dealerVal) {
-                System.out.println("Player wins");
+                System.out.println("Player wins, with a " + playerVal);
                 return 1; // player wins
             } else if (playerVal < dealerVal) {
-                System.out.println("Dealer wins ");
+                System.out.println("Dealer wins, with a " + dealerVal);
                 return 0; // player loses
             } else {
                 System.out.println("Tie");
@@ -71,25 +71,40 @@ public class Game {
         }
     }
 
+    public static boolean checkBust(){
+        return game.player.getPlayerValue() > 21;
+    }
+
     // handles the players turn
     public static void playerTurn(Hand hand, Deck deck) {
-        int move = -1;
-        while (move == 1) { // while player hits
+        int move = 1;
+        while (true) { // while player hits
+            System.out.println("getting move");
             move = game.player.getMove();
-            game.player.giveCard(deck.getCard());
+            
+            if (move == 0) { // Stand
+                return;
+            }
+            if (move == 1) { // Hit
+                Card card = deck.getCard();
+                System.out.println(card.getValue() + " of " + card.getSuit());
+                game.player.giveCard(card);
+                if (checkBust()) {
+                    checkWin();
+                }
+            }
+            if (move == 2) { // Double Down: Double bet & take one more card, than they have to stand
+                hand.setBet(hand.getBet() * 2);
+                return;
+            }
+            if (move == 3) { // Split: If player's first two cards = value, they can split them into two separate hands and play each hand
+                // TODO implement Split
+            }
+            if (move == 4) { // Insurance: If dealer's visible card is an Ace, player can buy insurance, which is a side bet that pays out 2:1 if dealer gets Blackjack 
+                // TODO implement Insurance
+            }
         }
-        if (move == 0) { // Stand
-            return;
-        }
-        if (move == 2) { // Double Down: Double bet & take one more card, than they have to stand
-            hand.setBet(hand.getBet() * 2);
-        }
-        if (move == 3) { // Split: If player's first two cards = value, they can split them into two separate hands and play each hand
-            // TODO implement Split
-        }
-        if (move == 4) { // Insurance: If dealer's visible card is an Ace, player can buy insurance, which is a side bet that pays out 2:1 if dealer gets Blackjack 
-            // TODO implement Insurance
-        }
+
     }
 
     public void dealCards() {
