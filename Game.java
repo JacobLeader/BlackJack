@@ -31,6 +31,7 @@ public class Game {
 
             if (move == -1) { // if player busted
                 checkWin(hand);
+                game.player.giveMoney(-1 * hand.getBet());
                 continue;
             }
             // Dealer's turn
