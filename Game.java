@@ -4,6 +4,8 @@ public class Game {
     // private Deck deck; 
     private Player player;
     private Dealer dealer;
+    private Hand hand;
+
     private static Game game;
     public Game() {
         player = new Player(1000);
@@ -26,11 +28,12 @@ public class Game {
             }
 
             // Dealer's turn
-            while (game.dealer.getDealerValue() < 17) {
-                game.dealer.giveCard(deck.getCard());
+            while (hand.getDealerValue() < 17) {
+                hand.giveDealerCard(deck.getCard());
+                System.out.println("gave dealer card  " + hand.getDealerValue());
             }
             
-            int gameStatus = checkWin();
+            int gameStatus = checkWin(hand);
             if (gameStatus == 1 || gameStatus == 2) {
                 // WIN
                 game.player.giveMoney(hand.getBet());
@@ -47,9 +50,9 @@ public class Game {
     }
 
     // checks to see if player won, 0 = loss, 1 = win, 2 = 21, 3 = tie
-    public static int checkWin() {
-        int playerVal = game.player.getPlayerValue();
-        int dealerVal = game.dealer.getDealerValue();
+    public static int checkWin(Hand hand) {
+        int playerVal = hand.getPlayerValue();
+        int dealerVal = hand.getDealerValue();
         
         if (playerVal > 21) {
             System.out.println("Player Bust!");
@@ -75,8 +78,8 @@ public class Game {
         }
     }
 
-    public static boolean checkBust(){
-        return game.player.getPlayerValue() > 21;
+    public static boolean checkBust(Hand hand){
+        return hand.getPlayerValue() > 21;
     }
 
     // handles the players turn
@@ -90,8 +93,8 @@ public class Game {
             if (move == 1) { // Hit
                 Card card = deck.getCard();
                 System.out.println("You got a " + card.getValue() + " of " + card.getSuit());
-                game.player.giveCard(card);
-                if (checkBust()) {
+                hand.givePlayerCard(card);
+                if (checkBust(hand)) {
                     return 0; // forced out of loop in main, so the game ends
                     // return 1;
                 }
