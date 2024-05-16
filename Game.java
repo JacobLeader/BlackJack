@@ -11,28 +11,33 @@ public class Game {
     }
 
     public static void main(String [] args) {
-        int move = -1;
+        int move = 1;
         game = new Game();
 
         // Each loop represents a round/hand
         while(true) {
+            System.out.println("--- NEW GAME ---");
             Deck deck = new Deck();
             int bet = game.player.getBet("this hand");
+            System.out.println("GOT BET" + bet);
             Hand hand = new Hand(bet); // contains the bets
-
-            playerTurn(hand, deck);
+            
+            while (move == 1){
+                move = playerTurn(hand, deck);
+            }
 
             // Dealer's turn
             while (game.dealer.getDealerValue() < 17) {
                 game.dealer.giveCard(deck.getCard());
             }
-
-            if (checkWin() == 1 || checkWin() == 2) {
+            
+            int gameStatus = checkWin();
+            if (gameStatus == 1 || gameStatus == 2) {
                 // WIN
                 game.player.giveMoney(hand.getBet());
                 // TODO check which bets the player has, contained in arraylist
             }
-            else if (checkWin() == 3) {
+            else if (gameStatus == 3) {
                 // TIE
             }
             else {
@@ -76,26 +81,26 @@ public class Game {
     }
 
     // handles the players turn
-    public static void playerTurn(Hand hand, Deck deck) {
+    public static int playerTurn(Hand hand, Deck deck) {
         int move = 1;
-        while (true) { // while player hits
             System.out.println("getting move");
             move = game.player.getMove();
             
             if (move == 0) { // Stand
-                return;
+                return 0;
             }
             if (move == 1) { // Hit
                 Card card = deck.getCard();
-                System.out.println(card.getValue() + " of " + card.getSuit());
+                System.out.println("You got a " + card.getValue() + " of " + card.getSuit());
                 game.player.giveCard(card);
                 if (checkBust()) {
-                    checkWin();
+                    return 0; // forced out of loop in main, so the game ends
+                    // return 1;
                 }
             }
             if (move == 2) { // Double Down: Double bet & take one more card, than they have to stand
                 hand.setBet(hand.getBet() * 2);
-                return;
+                // return 2;
             }
             if (move == 3) { // Split: If player's first two cards = value, they can split them into two separate hands and play each hand
                 // TODO implement Split
@@ -103,8 +108,7 @@ public class Game {
             if (move == 4) { // Insurance: If dealer's visible card is an Ace, player can buy insurance, which is a side bet that pays out 2:1 if dealer gets Blackjack 
                 // TODO implement Insurance
             }
-        }
-
+            return move;
     }
 
     public void dealCards() {
