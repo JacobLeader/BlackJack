@@ -47,4 +47,15 @@ public class Hand extends Helpers {
     public void giveDealerCard(Card card) {
         dealerCards.add(card);
     }
+
+    // returns the hand that someone has (player or dealer)
+    public ArrayList<Card> getCards(String who) {
+        if (who.equals("player")) {
+            return playerCards;
+        }
+        if (who.equals("dealer")) {
+            return dealerCards;
+        }
+        return new ArrayList<Card>();
+    }
 }
