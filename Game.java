@@ -19,12 +19,13 @@ public class Game {
         // Each loop represents a round/hand
         while(true) {
             move = 1;
-            System.out.println("--- NEW GAME ---");
+            System.out.println("                            --- NEW GAME ---");
             Deck deck = new Deck();
             int bet = game.player.getBet("this hand");
             Hand hand = new Hand(bet); // contains the bets
             
-            hand.giveDealerCard(deck.getCard());
+            dealCard("Dealer", hand, deck);
+
             while (move == 1){
                 move = playerTurn(hand, deck);
             }
@@ -36,8 +37,7 @@ public class Game {
             }
             // Dealer's turn
             while (hand.getDealerValue() < 17) {
-                hand.giveDealerCard(deck.getCard());
-                System.out.println("gave dealer card  " + hand.getDealerValue());
+                dealCard("Dealer", hand, deck);
             }
             
             int gameStatus = checkWin(hand);
@@ -99,9 +99,7 @@ public class Game {
                 return 0;
             }
             if (move == 1) { // Hit
-                Card card = deck.getCard();
-                hand.givePlayerCard(card);
-                System.out.println("You got a " + card.getValue() + " of " + card.getSuit() + " your card value is " + hand.getPlayerValue());
+                dealCard("You", hand, deck);
                 if (checkBust(hand)) {
                     return -1; // forced out of loop in main, so the game ends
                     // return 1;
@@ -120,7 +118,49 @@ public class Game {
             return move;
     }
 
-    public void dealCards() {
-        // TODO initial dealing, player gets two, dealer gets one
+    // prints out what cards the player and dealer have 
+    public static void printHandStatus(Hand hand){
+        // System.out.println("Your hand value is " + hand.getPlayerValue());
+        // System.out.println("Dealer's hand value is " + hand.getDealerValue());
+        System.out.println("Player has a");
+        for (Card card : hand.getCards("player")){
+            System.out.println("    " + handleCard(card.getValue()) + " of " + card.getSuit());
+        }
+
+        System.out.println();
+
+        System.out.println("Dealer has a");
+        for (Card card : hand.getCards("dealer")){
+            System.out.println("    " + handleCard(card.getValue()) + " of " + card.getSuit());
+        }
+        System.out.println();
+    }
+
+    // for print statement to tell user which card they got
+    public static String handleCard(int value) {
+        if (value == 1) {
+            return "Ace";
+        }
+        if (value == 13) {
+            return "King";
+        }
+        if (value == 12) {
+            return "Queen";
+        }
+        if (value == 11) {
+            return "Jack";
+        }
+        return "" + value;
+    }
+
+    public static void dealCard(String who, Hand hand, Deck deck) {
+        Card card = deck.getCard();
+        if (who.equals("You")) {
+            hand.givePlayerCard(card);
+        } else {
+            hand.giveDealerCard(card);
+        }
+        System.out.println(who + " got a " + handleCard(card.getValue()) + " of " + card.getSuit());
+        printHandStatus(hand);
     }
 }
