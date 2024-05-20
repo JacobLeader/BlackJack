@@ -24,7 +24,7 @@ public class Player extends Helpers {
         while (true) {
             System.out.println("Enter your move: ");
             input = scanner.nextLine();
-            System.out.print("\033[H\033[2J");
+            clearConsole();
             if (input.equalsIgnoreCase("S")){
                 return 0;
             }
