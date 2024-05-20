@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 @SuppressWarnings("unused")
-public class Game {
+public class Game extends Helpers {
     // private Deck deck; 
     private Player player;
     private Dealer dealer;
@@ -23,6 +23,8 @@ public class Game {
             Deck deck = new Deck();
             int bet = game.player.getBet("this hand");
             Hand hand = new Hand(bet); // contains the bets
+
+            clearConsole();
             
             dealCard("Dealer", hand, deck);
 
@@ -122,14 +124,16 @@ public class Game {
     public static void printHandStatus(Hand hand){
         // System.out.println("Your hand value is " + hand.getPlayerValue());
         // System.out.println("Dealer's hand value is " + hand.getDealerValue());
-        System.out.println("Player has a");
-        for (Card card : hand.getCards("player")){
-            System.out.println("    " + handleCard(card.getValue()) + " of " + card.getSuit());
+        if (hand.getPlayerValue() != 0) {
+            System.out.println("Player has a:");
+            for (Card card : hand.getCards("player")){
+                System.out.println("    " + handleCard(card.getValue()) + " of " + card.getSuit());
+            }
         }
 
         System.out.println();
 
-        System.out.println("Dealer has a");
+        System.out.println("Dealer has a:");
         for (Card card : hand.getCards("dealer")){
             System.out.println("    " + handleCard(card.getValue()) + " of " + card.getSuit());
         }
