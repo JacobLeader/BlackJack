@@ -6,10 +6,10 @@ public class Hand extends Helpers {
     private int bet;
     private ArrayList<Card> playerCards;
     private ArrayList<Card> dealerCards;
-    public Hand(int gBet) {
+    public Hand() {
         playerCards = new ArrayList<>();
         dealerCards = new ArrayList<>();
-        bet = gBet;
+        bet = 0;
     }
 
     // adds or subtracts amount to change
@@ -17,8 +17,19 @@ public class Hand extends Helpers {
         bet += amount;
     }
 
-    public void setBet(int amount) {
-        bet = amount;
+    public void setBet(Player player) {
+        int gBet;
+        int money = player.getMoney();
+        while (true) {
+            gBet = player.getBet("this hand");
+            if (money >= gBet) {
+                bet = gBet;
+                System.out.println(money + "  " + gBet);
+                return;
+            }
+
+            System.out.println("Error: Insufficient Funds");
+        }
     }
 
     public int getBet() {
