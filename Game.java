@@ -34,15 +34,14 @@ public class Game extends Helpers {
 
             dealCard("You", hand, deck);
 
-
             while (move == 1){
                 move = playerTurn(hand, deck);
             }
 
-            if (move == -1) { // if player busted
-                checkWin(hand);
+            if (move == -1) { // If player busted
+                checkWin(hand); // Prints who won and what happened
                 game.player.giveMoney(-1 * hand.getBet());
-                continue;
+                continue; // stop loop, go to next game
             }
             // Dealer's turn
             while (hand.getDealerValue() < 17) {
@@ -53,11 +52,14 @@ public class Game extends Helpers {
 
             if (gameStatus == 1 || gameStatus == 2) {
                 // WIN
-                game.player.giveMoney(hand.getBet());
+                int payout;
+                payout = gameStatus == 1 ? hand.getBet() : 3 * (hand.getBet() / 2); // Payout bet, else, 3:2 for blackjack
+                game.player.giveMoney(payout);
                 // TODO check which bets the player has, contained in arraylist
             }
             else if (gameStatus == 3) {
                 // TIE
+                game.player.giveMoney(0); // so player sees the money they have
             }
             else {
                 // LOSS
