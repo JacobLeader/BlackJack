@@ -21,12 +21,17 @@ public class Game extends Helpers {
             move = 1;
             System.out.println("                            --- NEW GAME ---");
             Deck deck = new Deck();
-            int bet = game.player.getBet("this hand");
-            Hand hand = new Hand(bet); // contains the bets
+            // int bet = game.player.getBet("this hand");
+            Hand hand = new Hand(); // contains the bets & cards
+            
+            hand.setBet(game.player); // goes into a loop until the player gives a valid bet amount (money >= bet)
 
             clearConsole();
             
             dealCard("Dealer", hand, deck);
+
+            dealCard("You", hand, deck);
+
 
             while (move == 1){
                 move = playerTurn(hand, deck);
@@ -108,7 +113,7 @@ public class Game extends Helpers {
                 }
             }
             if (move == 2) { // Double Down: Double bet & take one more card, than they have to stand
-                hand.setBet(hand.getBet() * 2);
+                // hand.setBet(hand.getBet() * 2);
                 // return 2;
             }
             if (move == 3) { // Split: If player's first two cards = value, they can split them into two separate hands and play each hand
@@ -124,20 +129,21 @@ public class Game extends Helpers {
     public static void printHandStatus(Hand hand){
         // System.out.println("Your hand value is " + hand.getPlayerValue());
         // System.out.println("Dealer's hand value is " + hand.getDealerValue());
-        if (hand.getPlayerValue() != 0) {
-            System.out.println("Player has a:");
-            for (Card card : hand.getCards("player")){
+        if (hand.getPlayerValue() != 0) { // dont print anything if player doesnt have any cards, because the game starts with both getting 1 card
+                System.out.println("Player has a:");
+                for (Card card : hand.getCards("player")){
+                    System.out.println("    " + handleCard(card.getValue()) + " of " + card.getSuit());
+                }
+            
+
+            System.out.println();
+
+            System.out.println("Dealer has a:");
+            for (Card card : hand.getCards("dealer")){
                 System.out.println("    " + handleCard(card.getValue()) + " of " + card.getSuit());
             }
+            System.out.println();
         }
-
-        System.out.println();
-
-        System.out.println("Dealer has a:");
-        for (Card card : hand.getCards("dealer")){
-            System.out.println("    " + handleCard(card.getValue()) + " of " + card.getSuit());
-        }
-        System.out.println();
     }
 
     // for print statement to tell user which card they got
