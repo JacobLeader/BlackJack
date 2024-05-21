@@ -30,16 +30,16 @@ public class Game extends Helpers {
 
             clearConsole();
             
+            //  --- GAME START --- 
             dealCard("Dealer", hand, deck);
 
             dealCard("You", hand, deck);
 
-            while (move == 1){
+            while (move == 1) {
                 move = playerTurn(hand, deck);
             }
 
             if (move == -1) { // If player busted
-                checkWin(hand); // Prints who won and what happened
                 game.player.giveMoney(-1 * hand.getBet());
                 continue; // stop loop, go to next game
             }
@@ -112,9 +112,8 @@ public class Game extends Helpers {
         }
         if (move == 1) { // Hit
             dealCard("You", hand, deck);
-            if (checkBust(hand)) {
+            if (checkWin(hand) == 0) { // Prints who won and what happened
                 return -1; // forced out of loop in main, so the game ends
-                // return 1;
             }
         }
         if (move == 2) { // Double Down: Double bet & take one more card, than they have to stand
