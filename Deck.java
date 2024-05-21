@@ -17,7 +17,6 @@ public class Deck {
                 deck.add(new Card(i, suit));
             }
         }
-        System.out.println(deck.size());
     }
 
     public void shuffleDeck() {
