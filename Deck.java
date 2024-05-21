@@ -4,35 +4,27 @@ public class Deck {
     ArrayList<Card> deck = new ArrayList<Card>();
     String[] suits = {"Spades", "Hearts", "Diamonds", "Clubs"};
 
+    // Constructor
     public Deck() {
         createDeck();
         shuffleDeck();
     }
 
+    // Creates a new deck 
     public void createDeck() {
         for (String suit: suits) {
             for (int i = 1; i <= 13; i++) {
                 deck.add(new Card(i, suit));
             }
         }
-    }
-
-    public void removeCard(int value, String suit) {
-        Card card;
-        for (int i = 0; i < deck.size(); i++) {
-            card = deck.get(i);
-            if (card.getValue() == value && card.getSuit().equals(suit)) {
-                deck.remove(i);
-                break; // dont need to look anymore
-            }
-        }
+        System.out.println(deck.size());
     }
 
     public void shuffleDeck() {
         Collections.shuffle(deck);
     }
 
-    // deck is shuffled, so we can just grab the first card
+    // Deck is shuffled, so we can just grab the first card, than remove it so there are no cards dealt twice
     public Card getCard() {
         return deck.remove(0);
     }

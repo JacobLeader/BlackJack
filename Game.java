@@ -5,13 +5,15 @@ public class Game extends Helpers {
     private Player player;
     private Dealer dealer;
     private Hand hand;
-
     private static Game game;
+
+    // Constructor
     public Game() {
         player = new Player(1000);
         dealer = new Dealer();
     }
 
+    // Main game loop
     public static void main(String [] args) {
         int move;
         game = new Game();
@@ -64,7 +66,7 @@ public class Game extends Helpers {
         }
     }
 
-    // checks to see if player won, 0 = loss, 1 = win, 2 = 21, 3 = tie
+    // Checks to see if player won, 0 = loss, 1 = win, 2 = 21, 3 = tie
     public static int checkWin(Hand hand) {
         int playerVal = hand.getPlayerValue();
         int dealerVal = hand.getDealerValue();
@@ -93,39 +95,40 @@ public class Game extends Helpers {
         }
     }
 
+    // Checks if player has busted
     public static boolean checkBust(Hand hand){
         return hand.getPlayerValue() > 21;
     }
 
-    // handles the players turn
+    // Handles the players turn
     public static int playerTurn(Hand hand, Deck deck) {
         int move = 1;
-            move = game.player.getMove();
-            
-            if (move == 0) { // Stand
-                return 0;
+        move = game.player.getMove();
+        
+        if (move == 0) { // Stand
+            return 0;
+        }
+        if (move == 1) { // Hit
+            dealCard("You", hand, deck);
+            if (checkBust(hand)) {
+                return -1; // forced out of loop in main, so the game ends
+                // return 1;
             }
-            if (move == 1) { // Hit
-                dealCard("You", hand, deck);
-                if (checkBust(hand)) {
-                    return -1; // forced out of loop in main, so the game ends
-                    // return 1;
-                }
-            }
-            if (move == 2) { // Double Down: Double bet & take one more card, than they have to stand
-                // hand.setBet(hand.getBet() * 2);
-                // return 2;
-            }
-            if (move == 3) { // Split: If player's first two cards = value, they can split them into two separate hands and play each hand
-                // TODO implement Split
-            }
-            if (move == 4) { // Insurance: If dealer's visible card is an Ace, player can buy insurance, which is a side bet that pays out 2:1 if dealer gets Blackjack 
-                // TODO implement Insurance
-            }
-            return move;
+        }
+        if (move == 2) { // Double Down: Double bet & take one more card, than they have to stand
+            // hand.setBet(hand.getBet() * 2);
+            // return 2;
+        }
+        if (move == 3) { // Split: If player's first two cards = value, they can split them into two separate hands and play each hand
+            // TODO implement Split
+        }
+        if (move == 4) { // Insurance: If dealer's visible card is an Ace, player can buy insurance, which is a side bet that pays out 2:1 if dealer gets Blackjack 
+            // TODO implement Insurance
+        }
+        return move;
     }
 
-    // prints out what cards the player and dealer have 
+    // Prints out what cards the player and dealer have 
     public static void printHandStatus(Hand hand){
         // System.out.println("Your hand value is " + hand.getPlayerValue());
         // System.out.println("Dealer's hand value is " + hand.getDealerValue());
@@ -146,7 +149,7 @@ public class Game extends Helpers {
         }
     }
 
-    // for print statement to tell user which card they got
+    // For print statement to tell user which card they got
     public static String handleCard(int value) {
         if (value == 1) {
             return "Ace";
@@ -163,6 +166,7 @@ public class Game extends Helpers {
         return "" + value;
     }
 
+    // Gives a card to the given 'who' input (You, Player)
     public static void dealCard(String who, Hand hand, Deck deck) {
         Card card = deck.getCard();
         if (who.equals("You")) {

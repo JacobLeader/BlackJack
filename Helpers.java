@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 public class Helpers {
+
+    // gets the value of the arraylist of cards passed into it
     public int getHandValue(ArrayList<Card> cards) {
         // straight forward other than aces
         int value = 0;

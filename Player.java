@@ -1,16 +1,16 @@
 import java.util.Scanner;
 public class Player extends Helpers {
-    // private ArrayList<Card> cards;
     int money;
     Scanner scanner;
 
+    // Constructor
     public Player(int gMoney) {
-        // cards = new ArrayList<>();
         money = gMoney;
         System.out.println("You have $" + money);
         scanner = new Scanner(System.in);
     }
 
+    // Gets what move the player wants to make
     public int getMove() {
         /*
             Stand: 0
@@ -47,7 +47,7 @@ public class Player extends Helpers {
         }
     }
     
-    // gets the amount the player wants to bet
+    // Gets the amount the player wants to bet
     public int getBet(String betType) {
         while (true) {
             System.out.println("Please place the amount you would like to bet on " + betType);
@@ -62,6 +62,7 @@ public class Player extends Helpers {
         }
     }
 
+    // Gives the player money
     public void giveMoney(int amount){
         money = money + amount;
         System.out.println("You have $" + money);

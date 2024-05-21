@@ -6,13 +6,15 @@ public class Hand extends Helpers {
     private int bet;
     private ArrayList<Card> playerCards;
     private ArrayList<Card> dealerCards;
+
+    // Constructor
     public Hand() {
         playerCards = new ArrayList<>();
         dealerCards = new ArrayList<>();
         bet = 0;
     }
 
-    // adds or subtracts amount to change
+    // Adds or subtracts amount to change
     public void addToBet(int amount) {
         bet += amount;
     }
@@ -38,8 +40,7 @@ public class Hand extends Helpers {
 
     public ArrayList<Card> getPlayerCards() {
         return playerCards;
-    }
-
+    }             
     public ArrayList<Card> getDealerCards() {
         return dealerCards;
     }
@@ -47,7 +48,6 @@ public class Hand extends Helpers {
     public int getPlayerValue() {
         return getHandValue(playerCards);
     }
-
     public int getDealerValue() {
         return getHandValue(dealerCards);
     }
@@ -59,7 +59,7 @@ public class Hand extends Helpers {
         dealerCards.add(card);
     }
 
-    // returns the hand that someone has (player or dealer)
+    // Returns the hand that someone has (player or dealer)
     public ArrayList<Card> getCards(String who) {
         if (who.equals("player")) {
             return playerCards;
