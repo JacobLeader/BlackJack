@@ -67,6 +67,10 @@ public class Player extends Helpers {
         System.out.println("You have $" + money);
     }
 
+    public int getMoney(){
+        return money;
+    }
+
     public void showOptions() {
         System.out.println("====================================\n" +
                            "|          Blackjack Moves         |\n" +
