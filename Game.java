@@ -118,10 +118,12 @@ public class Game extends Helpers {
         }
         if (move == 2) { // Double Down: Double bet & take one more card, than they have to stand
             hand.setBet(hand.getBet() * 2);
+            dealCard("You", hand, deck);
             return 2;
         }
         if (move == 3) { // Split: If player's first two cards = value, they can split them into two separate hands and play each hand
             // TODO implement Split
+
         }
         if (move == 4) { // Insurance: If dealer's visible card is an Ace, player can buy insurance, which is a side bet that pays out 2:1 if dealer gets Blackjack 
             // TODO implement Insurance
@@ -170,12 +172,12 @@ public class Game extends Helpers {
     // Gives a card to the given 'who' input (You, Player)
     public static void dealCard(String who, Hand hand, Deck deck) {
         Card card = deck.getCard();
-        if (who.equals("You")) {
+        if (who.equals("Player")) {
             hand.givePlayerCard(card);
         } else {
             hand.giveDealerCard(card);
         }
-        System.out.println(who + " got a " + handleCard(card.getValue()) + " of " + card.getSuit());
+        System.out.println(who.equals("Player") ? "You" : who + " got a " + handleCard(card.getValue()) + " of " + card.getSuit());
         printHandStatus(hand);
     }
 }
