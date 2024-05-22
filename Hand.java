@@ -19,6 +19,7 @@ public class Hand extends Helpers {
         bet += amount;
     }
 
+    // Used first to get a valid bet from the player
     public void setBet(Player player) {
         int gBet;
         int money = player.getMoney();
@@ -34,6 +35,10 @@ public class Hand extends Helpers {
         }
     }
 
+    // Overloaded method used for doubling down
+    public void setBet(int gBet) {
+        bet = gBet;
+    }
     public int getBet() {
         return bet;
     }
