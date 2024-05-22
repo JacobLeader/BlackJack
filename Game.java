@@ -117,8 +117,8 @@ public class Game extends Helpers {
             }
         }
         if (move == 2) { // Double Down: Double bet & take one more card, than they have to stand
-            // hand.setBet(hand.getBet() * 2);
-            // return 2;
+            hand.setBet(hand.getBet() * 2);
+            return 2;
         }
         if (move == 3) { // Split: If player's first two cards = value, they can split them into two separate hands and play each hand
             // TODO implement Split
