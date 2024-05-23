@@ -32,8 +32,10 @@ public class Game extends Helpers {
             
             //  --- GAME START --- 
             dealCard("Dealer", hand, deck);
-
-            dealCard("You", hand, deck);
+            dealCard("Player", hand, deck);
+            dealCard("Player", hand, deck);
+            System.out.println();
+            printHandStatus(hand);
 
             while (move == 1) {
                 move = playerTurn(hand, deck);
@@ -47,6 +49,7 @@ public class Game extends Helpers {
             while (hand.getDealerValue() < 17) {
                 dealCard("Dealer", hand, deck);
             }
+            printHandStatus(hand);
             
             int gameStatus = checkWin(hand);
 
@@ -111,19 +114,25 @@ public class Game extends Helpers {
             return 0;
         }
         if (move == 1) { // Hit
-            dealCard("You", hand, deck);
+            dealCard("Player", hand, deck);
+            printHandStatus(hand);
             if (checkWin(hand) == 0) { // Prints who won and what happened
                 return -1; // forced out of loop in main, so the game ends
             }
         }
         if (move == 2) { // Double Down: Double bet & take one more card, than they have to stand
             hand.setBet(hand.getBet() * 2);
-            dealCard("You", hand, deck);
+            dealCard("Player", hand, deck);
+            printHandStatus(hand);
             return 2;
         }
         if (move == 3) { // Split: If player's first two cards = value, they can split them into two separate hands and play each hand
             // TODO implement Split
-
+            if (hand.canSplit()) {
+                hand.split();
+            } else {
+                return 1; // Gets a new move from the player
+            }
         }
         if (move == 4) { // Insurance: If dealer's visible card is an Ace, player can buy insurance, which is a side bet that pays out 2:1 if dealer gets Blackjack 
             // TODO implement Insurance
@@ -135,21 +144,20 @@ public class Game extends Helpers {
     public static void printHandStatus(Hand hand){
         // System.out.println("Your hand value is " + hand.getPlayerValue());
         // System.out.println("Dealer's hand value is " + hand.getDealerValue());
-        if (hand.getPlayerValue() != 0) { // dont print anything if player doesnt have any cards, because the game starts with both getting 1 card
-                System.out.println("Player has a:");
-                for (Card card : hand.getCards("player")){
-                    System.out.println("    " + handleCard(card.getValue()) + " of " + card.getSuit());
-                }
-            
-
-            System.out.println();
-
-            System.out.println("Dealer has a:");
-            for (Card card : hand.getCards("dealer")){
-                System.out.println("    " + handleCard(card.getValue()) + " of " + card.getSuit());
-            }
-            System.out.println();
+        System.out.println("Player has a:");
+        for (Card card : hand.getCards("player")){
+            System.out.println("    " + handleCard(card.getValue()) + " of " + card.getSuit());
         }
+        
+
+        System.out.println();
+
+        System.out.println("Dealer has a:");
+        for (Card card : hand.getCards("dealer")){
+            System.out.println("    " + handleCard(card.getValue()) + " of " + card.getSuit());
+        }
+        System.out.println();
+        
     }
 
     // For print statement to tell user which card they got
@@ -169,7 +177,7 @@ public class Game extends Helpers {
         return "" + value;
     }
 
-    // Gives a card to the given 'who' input (You, Player)
+    // Gives a card to the given 'who' input (Player, Dealer)
     public static void dealCard(String who, Hand hand, Deck deck) {
         Card card = deck.getCard();
         if (who.equals("Player")) {
@@ -177,7 +185,6 @@ public class Game extends Helpers {
         } else {
             hand.giveDealerCard(card);
         }
-        System.out.println(who.equals("Player") ? "You" : who + " got a " + handleCard(card.getValue()) + " of " + card.getSuit());
-        printHandStatus(hand);
+        System.out.println((who.equals("Player") ? "You" : who) + " got a " + handleCard(card.getValue()) + " of " + card.getSuit());
     }
 }
