@@ -83,4 +83,10 @@ public class Player extends Helpers {
                            "| I: Insurance                     |\n" +
                            "====================================");
     }
+
+    // Asks the player if they want to continue or exit
+    public boolean askPlayAgain() {
+        System.out.println("Would you like to play again (y/n):");
+        return scanner.nextLine().equalsIgnoreCase("y") ? true : false;
+    }
 }
