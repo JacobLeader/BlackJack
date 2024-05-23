@@ -6,11 +6,13 @@ public class Hand extends Helpers {
     private int bet;
     private ArrayList<Card> playerCards;
     private ArrayList<Card> dealerCards;
+    private ArrayList<Hand> splitHands;
 
     // Constructor
     public Hand() {
         playerCards = new ArrayList<>();
         dealerCards = new ArrayList<>();
+        splitHands = new ArrayList<>();
         bet = 0;
     }
 
@@ -74,4 +76,29 @@ public class Hand extends Helpers {
         }
         return new ArrayList<Card>();
     }
+
+    // Checks if the player can split
+    public boolean canSplit() {
+        if (playerCards.size() == 2 && playerCards.get(0).getValue() == playerCards.get(1).getValue()){
+            return true;
+        }
+        System.out.println("You cannot split at this time.");
+        return false;
+    }
+
+    // Creates a split hand
+    public void split() {
+        Hand hand1 = new Hand();
+        Hand hand2 = new Hand();
+
+        hand1.givePlayerCard(playerCards.get(0));
+        hand2.givePlayerCard(playerCards.get(1));
+
+        splitHands.add(hand1);
+        splitHands.add(hand2);
+
+        playerCards.clear();
+    }
+
+
 }
