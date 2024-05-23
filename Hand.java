@@ -77,6 +77,14 @@ public class Hand extends Helpers {
         return new ArrayList<Card>();
     }
 
+    public boolean canDoubleDown() {
+        if (playerCards.size() == 2) {
+            return true;
+        }
+        System.out.println("You can only double down with two cards.");
+        return false;
+    }
+
     // Checks if the player can split
     public boolean canSplit() {
         if (playerCards.size() == 2 && playerCards.get(0).getValue() == playerCards.get(1).getValue()){
@@ -85,7 +93,6 @@ public class Hand extends Helpers {
         System.out.println("You cannot split at this time.");
         return false;
     }
-
     // Creates a split hand
     public void split() {
         Hand hand1 = new Hand();

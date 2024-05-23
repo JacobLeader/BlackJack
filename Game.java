@@ -6,21 +6,28 @@ public class Game extends Helpers {
     private Dealer dealer;
     private Hand hand;
     private static Game game;
+    private static int gameCount;
+
 
     // Constructor
     public Game() {
         player = new Player(1000);
         dealer = new Dealer();
+        gameCount = 0;
     }
 
+    // TODO Card counting cheat
+    // TODO Stats about game play: games played, win ratio, luck factor, net profit
+    
     // Main game loop
     public static void main(String [] args) {
         int move;
         game = new Game();
 
-        // Each loop represents a round/hand
-        while(true) {
+        // Each loop represents a round/hand, gameCount == 0 needs to be infront of askPlayAgain so it checks first
+        while(gameCount == 0 || game.player.askPlayAgain()) {
             move = 1;
+            clearConsole();
             System.out.println("                            --- NEW GAME ---");
             Deck deck = new Deck();
             // int bet = game.player.getBet("this hand");
@@ -41,10 +48,6 @@ public class Game extends Helpers {
                 move = playerTurn(hand, deck);
             }
 
-            if (move == -1) { // If player busted
-                game.player.giveMoney(-1 * hand.getBet());
-                continue; // stop loop, go to next game
-            }
             // Dealer's turn
             while (hand.getDealerValue() < 17) {
                 dealCard("Dealer", hand, deck);
@@ -68,6 +71,7 @@ public class Game extends Helpers {
                 // LOSS
                 game.player.giveMoney(-1 * hand.getBet());
             }
+            gameCount++;
         }
     }
 
@@ -116,15 +120,18 @@ public class Game extends Helpers {
         if (move == 1) { // Hit
             dealCard("Player", hand, deck);
             printHandStatus(hand);
-            if (checkWin(hand) == 0) { // Prints who won and what happened
+            if (checkBust(hand)) { // Prints who won and what happened
                 return -1; // forced out of loop in main, so the game ends
             }
         }
-        if (move == 2) { // Double Down: Double bet & take one more card, than they have to stand
+        if (move == 2 && hand.canDoubleDown()) { // Double Down: Double bet & take one more card, than the hand is over
             hand.setBet(hand.getBet() * 2);
+            System.out.println("Your bet is now " + hand.getBet());
             dealCard("Player", hand, deck);
-            printHandStatus(hand);
             return 2;
+        }
+        else {
+            move = game.player.getMove();
         }
         if (move == 3) { // Split: If player's first two cards = value, they can split them into two separate hands and play each hand
             // TODO implement Split
@@ -144,7 +151,7 @@ public class Game extends Helpers {
     public static void printHandStatus(Hand hand){
         // System.out.println("Your hand value is " + hand.getPlayerValue());
         // System.out.println("Dealer's hand value is " + hand.getDealerValue());
-        System.out.println("Player has a:");
+        System.out.println("Player has a value of " + hand.getPlayerValue() + " with:");
         for (Card card : hand.getCards("player")){
             System.out.println("    " + handleCard(card.getValue()) + " of " + card.getSuit());
         }
@@ -152,7 +159,7 @@ public class Game extends Helpers {
 
         System.out.println();
 
-        System.out.println("Dealer has a:");
+        System.out.println("Dealer has a value of " + hand.getDealerValue() + " with:");
         for (Card card : hand.getCards("dealer")){
             System.out.println("    " + handleCard(card.getValue()) + " of " + card.getSuit());
         }
