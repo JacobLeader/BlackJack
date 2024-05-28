@@ -4,19 +4,21 @@ public class Game extends Helpers {
     // private Deck deck; 
     private Player player;
     private Dealer dealer;
-    private Hand hand;
+    private static Hand hand;
     private static Game game;
     private static int gameCount;
+    private static ArrayList<Hand> splitHands;
 
 
     // Constructor
     public Game() {
         player = new Player(1000);
         dealer = new Dealer();
+        splitHands = new ArrayList<>();
         gameCount = 0;
     }
 
-    // TODO Card counting cheat
+    // TODO Card counting cheat code 
     // TODO Stats about game play: games played, win ratio, luck factor, net profit
     
     // Main game loop
@@ -30,7 +32,6 @@ public class Game extends Helpers {
             clearConsole();
             System.out.println("                            --- NEW GAME ---");
             Deck deck = new Deck();
-            // int bet = game.player.getBet("this hand");
             Hand hand = new Hand(); // contains the bets & cards
             
             hand.setBet(game.player); // goes into a loop until the player gives a valid bet amount (money >= bet)
@@ -41,36 +42,12 @@ public class Game extends Helpers {
             dealCard("Dealer", hand, deck);
             dealCard("Player", hand, deck);
             dealCard("Player", hand, deck);
+            // dealPair(hand);
             System.out.println();
             printHandStatus(hand);
 
-            while (move == 1) {
-                move = playerTurn(hand, deck);
-            }
+            gameMechanism(hand, deck, true);
 
-            // Dealer's turn
-            while (hand.getDealerValue() < 17) {
-                dealCard("Dealer", hand, deck);
-            }
-            printHandStatus(hand);
-            
-            int gameStatus = checkWin(hand);
-
-            if (gameStatus == 1 || gameStatus == 2) {
-                // WIN
-                int payout;
-                payout = gameStatus == 1 ? hand.getBet() : 3 * (hand.getBet() / 2); // Payout bet, else, 3:2 for blackjack
-                game.player.giveMoney(payout);
-                // TODO check which bets the player has, contained in arraylist
-            }
-            else if (gameStatus == 3) {
-                // TIE
-                game.player.giveMoney(0); // so player sees the money they have
-            }
-            else {
-                // LOSS
-                game.player.giveMoney(-1 * hand.getBet());
-            }
             gameCount++;
         }
     }
@@ -128,18 +105,22 @@ public class Game extends Helpers {
             hand.setBet(hand.getBet() * 2);
             System.out.println("Your bet is now " + hand.getBet());
             dealCard("Player", hand, deck);
+            printHandStatus(hand);
             return 2;
         }
-        else {
-            move = game.player.getMove();
+        else if (move == 2) {
+            return 1; // gets a new move, like hitting but no actual hit
         }
-        if (move == 3) { // Split: If player's first two cards = value, they can split them into two separate hands and play each hand
-            // TODO implement Split
-            if (hand.canSplit()) {
-                hand.split();
-            } else {
-                return 1; // Gets a new move from the player
+        if (move == 3 && hand.canSplit()) {
+            split(hand, deck);
+            for (int i = 0; i < splitHands.size(); i++) {
+                System.out.println("Your are now playing split #" + (i+1));
+                printHandStatus(splitHands.get(i));
+                gameMechanism(splitHands.get(i), deck, i == splitHands.size() - 1); // only have dealer turn on the last split
             }
+        }
+        else if (move == 3) {
+            return 1; // gets a new move, like a hit happened
         }
         if (move == 4) { // Insurance: If dealer's visible card is an Ace, player can buy insurance, which is a side bet that pays out 2:1 if dealer gets Blackjack 
             // TODO implement Insurance
@@ -193,5 +174,64 @@ public class Game extends Helpers {
             hand.giveDealerCard(card);
         }
         System.out.println((who.equals("Player") ? "You" : who) + " got a " + handleCard(card.getValue()) + " of " + card.getSuit());
+    }
+
+    // For testing split
+    public static void dealPair(Hand hand) {
+        Card card1 = new Card(10, "Hearts");
+        Card card2= new Card(10, "Clubs");
+
+        hand.givePlayerCard(card1);
+        hand.givePlayerCard(card2);
+    }
+
+    // Creates split hands by using the custom hand constructor
+    public static void split(Hand hand, Deck deck) {
+        Hand hand1 = new Hand(hand.getPlayerCards().get(0), hand.getDealerCards(), hand.getBet());
+        // dealCard("player", hand1, deck);
+
+        Hand hand2 = new Hand(hand.getPlayerCards().get(0), hand.getDealerCards(), hand.getBet());
+        // dealCard("player", hand2, deck);
+
+        splitHands.add(hand1);
+        splitHands.add(hand2);
+
+    }
+
+    /* The player's turn, than the dealers turn, than checks to see the result of the game
+        @peram dealerTurn If the dealer should take their turn, used for split
+    */
+    public static void gameMechanism(Hand hand, Deck deck, boolean dealerTurn) {
+        int move = 1;
+
+        // playerTurn
+        while (move == 1) {
+            move = playerTurn(hand, deck);
+            if (checkBust(hand)) {
+                checkWin(hand);
+                return;
+            }
+        }
+        System.out.println("Dealers Turn Now");
+        // Dealer's turn
+        while (hand.getDealerValue() < 17 && dealerTurn) {
+            dealCard("Dealer", hand, deck);
+        }
+        printHandStatus(hand);
+        if (dealerTurn) { // only check for a win once the dealer has had their turn
+            int gameStatus = checkWin(hand);
+            handleGameResult(gameStatus, hand);
+        }
+    }
+
+    public static void handleGameResult(int gameStatus, Hand hand) {
+        if (gameStatus == 1 || gameStatus == 2) {
+            int payout = gameStatus == 1 ? hand.getBet() : 3 * (hand.getBet() / 2);
+            game.player.giveMoney(payout);
+        } else if (gameStatus == 3) {
+            game.player.giveMoney(0);
+        } else {
+            game.player.giveMoney(-1 * hand.getBet());
+        }
     }
 }
