@@ -6,14 +6,20 @@ public class Hand extends Helpers {
     private int bet;
     private ArrayList<Card> playerCards;
     private ArrayList<Card> dealerCards;
-    private ArrayList<Hand> splitHands;
 
     // Constructor
     public Hand() {
         playerCards = new ArrayList<>();
         dealerCards = new ArrayList<>();
-        splitHands = new ArrayList<>();
         bet = 0;
+    }
+
+    // Constructor where you can constrol exactly whats in it, used for split
+    public Hand(Card playerCard, ArrayList<Card> gDealerCards, int gBet) {
+        playerCards = new ArrayList<>();
+        playerCards.add(playerCard);
+        dealerCards = gDealerCards;
+        bet = gBet;
     }
 
     // Adds or subtracts amount to change
@@ -93,19 +99,4 @@ public class Hand extends Helpers {
         System.out.println("You cannot split at this time.");
         return false;
     }
-    // Creates a split hand
-    public void split() {
-        Hand hand1 = new Hand();
-        Hand hand2 = new Hand();
-
-        hand1.givePlayerCard(playerCards.get(0));
-        hand2.givePlayerCard(playerCards.get(1));
-
-        splitHands.add(hand1);
-        splitHands.add(hand2);
-
-        playerCards.clear();
-    }
-
-
 }
