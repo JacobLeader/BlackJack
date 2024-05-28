@@ -83,11 +83,15 @@ public class Hand extends Helpers {
         return new ArrayList<Card>();
     }
 
-    public boolean canDoubleDown() {
+    public boolean canDoubleDown(int bet, int playerMoney) {
         if (playerCards.size() == 2) {
             return true;
+        } else if (bet * 2 > playerMoney) {
+            System.out.println("Error: Insufficient Funds");
+            return false;
         }
         System.out.println("You can only double down with two cards.");
+
         return false;
     }
 
