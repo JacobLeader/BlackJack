@@ -33,13 +33,15 @@ public class Hand extends Helpers {
         int money = player.getMoney();
         while (true) {
             gBet = player.getBetInput("this hand");
-            if (money >= gBet) {
+            if (gBet <= 0) {
+                System.out.println("Error: Your Bet Must be Greater than Zero");
+            } else if (money >= gBet) {
                 bet = gBet;
                 System.out.println(money + "  " + gBet);
                 return;
+            } else {
+                System.out.println("Error: Insufficient Funds");
             }
-
-            System.out.println("Error: Insufficient Funds");
         }
     }
 
