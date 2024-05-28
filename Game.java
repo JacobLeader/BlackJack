@@ -101,11 +101,10 @@ public class Game extends Helpers {
                 return -1; // forced out of loop in main, so the game ends
             }
         }
-        if (move == 2 && hand.canDoubleDown()) { // Double Down: Double bet & take one more card, than the hand is over
+        if (move == 2 && hand.canDoubleDown(hand.getBet(), game.player.getMoney())) { // Double Down: Double bet & take one more card, than the hand is over
             hand.setBet(hand.getBet() * 2);
             System.out.println("Your bet is now " + hand.getBet());
             dealCard("Player", hand, deck);
-            printHandStatus(hand);
             return 2;
         }
         else if (move == 2) {
@@ -203,12 +202,14 @@ public class Game extends Helpers {
     */
     public static void gameMechanism(Hand hand, Deck deck, boolean dealerTurn) {
         int move = 1;
+        int gameStatus = 0;
 
         // playerTurn
         while (move == 1) {
             move = playerTurn(hand, deck);
             if (checkBust(hand)) {
-                checkWin(hand);
+                gameStatus = checkWin(hand);
+                handleGameResult(gameStatus, hand);
                 return;
             }
         }
@@ -219,7 +220,7 @@ public class Game extends Helpers {
         }
         printHandStatus(hand);
         if (dealerTurn) { // only check for a win once the dealer has had their turn
-            int gameStatus = checkWin(hand);
+            gameStatus = checkWin(hand);
             handleGameResult(gameStatus, hand);
         }
     }
