@@ -48,7 +48,7 @@ public class Player extends Helpers {
     }
     
     // Gets the amount the player wants to bet
-    public int getBet(String betType) {
+    public int getBetInput(String betType) {
         while (true) {
             System.out.println("Please place the amount you would like to bet on " + betType);
             if (scanner.hasNextInt()) {

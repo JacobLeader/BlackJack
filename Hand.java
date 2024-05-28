@@ -32,7 +32,7 @@ public class Hand extends Helpers {
         int gBet;
         int money = player.getMoney();
         while (true) {
-            gBet = player.getBet("this hand");
+            gBet = player.getBetInput("this hand");
             if (money >= gBet) {
                 bet = gBet;
                 System.out.println(money + "  " + gBet);
