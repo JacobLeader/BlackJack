@@ -113,4 +113,20 @@ public class Hand extends Helpers {
         System.out.println("You cannot split at this time.");
         return false;
     }
+
+    // Checks if the player got a Blackjack, loops looking for an ace & a ten card (face card or 10)
+    public boolean isBlackjack() {
+        boolean hasAce = false;
+        boolean hasTenOrFace = false;
+    
+        for (Card card : playerCards) {
+            int value = card.getValue();
+            if (value == 1) {
+                hasAce = true;
+            } else if (value >= 10) {
+                hasTenOrFace = true;
+            }
+        }
+        return hasAce && hasTenOrFace;
+    }
 }
