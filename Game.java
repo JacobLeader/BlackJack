@@ -13,7 +13,8 @@ public class Game extends Helpers {
     }
 
     // TODO Card counting cheat code 
-    // TODO Stats about game play: games played, win ratio, luck factor, net profit
+    // TODO put the cards back into the deck
+    // TODO Stats about game play: games played, win ratio, luck factor, net profit, correct move percentage
     
     // Main game loop
     public static void main(String [] args) {
@@ -35,11 +36,11 @@ public class Game extends Helpers {
             dealCard("Dealer", hand, deck);
             dealCard("Player", hand, deck);
             dealCard("Player", hand, deck);
-            dealCustomCards(hand); // Used for debugging split
+            // dealCustomCards(hand); // Used for testing
             System.out.println();
             printHandStatus(hand);
 
-            if (hand.isBlackjack()) {
+            if (hand.isBlackjack("player")) {
                 handleGameResult(checkWin(hand), hand);
                 continue;
             }
@@ -64,15 +65,15 @@ public class Game extends Helpers {
         // if dealer busts, and player is still alive
         else if (dealerVal > 21) {
             System.out.println("Dealer Bust!");
-            System.out.print(hand.isBlackjack() ? "Player got Blackjack!\n" : "");
-            return hand.isBlackjack() ? 2 : 1; // if player got a blackjack, return 2, else return a win(1)
+            System.out.print(hand.isBlackjack("player") ? "Player got Blackjack!\n" : "");
+            return hand.isBlackjack("player") ? 2 : 1; // if player got a blackjack, return 2, else return a win(1)
         }
         // if both player and dealer are alive
         else {
             if (playerVal > dealerVal) {
                 System.out.println("Player wins, with a " + playerVal);
-                System.out.print(hand.isBlackjack() ? "Player got Blackjack!\n" : "");
-                return hand.isBlackjack() ? 2 : 1; // player wins, check for a blackjack
+                System.out.print(hand.isBlackjack("player") ? "Player got Blackjack!\n" : "");
+                return hand.isBlackjack("player") ? 2 : 1; // player wins, check for a blackjack
             } else if (playerVal < dealerVal) {
                 System.out.println("Dealer wins, with a " + dealerVal);
                 return 0; // player loses
@@ -129,7 +130,11 @@ public class Game extends Helpers {
             return 1; // gets a new move, like a hit happened
         }
         if (move == 4) { // Insurance: If dealer's visible card is an Ace, player can buy insurance, which is a side bet that pays out 2:1 if dealer gets Blackjack 
-            // TODO implement Insurance
+            if (hand.canGetInsurance(hand.getBet(), game.player.getMoney())) {
+                hand.setInsurance(true);
+                System.out.println("You now have insurance worth " + hand.getBet()/2);
+            }
+            return 1; // gets a new move, like a hit happened
         }
         return move;
     }
@@ -189,15 +194,19 @@ public class Game extends Helpers {
     // For testing specific scenarios
     public static void dealCustomCards(Hand hand) {
         // Test split
-        Card card1 = new Card(10, "Hearts");
-        Card card2= new Card(10, "Clubs");
+        // Card card1 = new Card(10, "Hearts");
+        // Card card2= new Card(10, "Clubs");
 
         // Test blackjack
         // Card card1 = new Card(1, "Hearts");
         // Card card2= new Card(10, "Clubs");
 
-        hand.givePlayerCard(card1);
-        hand.givePlayerCard(card2);
+        // hand.givePlayerCard(card1);
+        // hand.givePlayerCard(card2);
+
+        // Test insurance
+        Card card = new Card(1, "Hearts");
+        hand.giveDealerCard(card);
     }
 
     /* Creates split hands by using the custom hand constructor 
@@ -227,6 +236,10 @@ public class Game extends Helpers {
         while (move == 1) {
             move = playerTurn(hand, deck);
             if (checkBust(hand)) {
+                if (hand.hasInsurance()) { // TODO refactor this
+                    handleInsuranceResult(hand.getBet(), hand.isBlackjack("dealer"), game.player);
+                    hand.setInsurance(false);
+                }
                 gameStatus = checkWin(hand);
                 handleGameResult(gameStatus, hand);
                 return;
@@ -235,6 +248,10 @@ public class Game extends Helpers {
         // Dealer's turn
         while (hand.getDealerValue() < 17 && dealerTurn) {
             dealCard("Dealer", hand, deck);
+            if (hand.hasInsurance()) {
+                handleInsuranceResult(hand.getBet(), hand.isBlackjack("dealer"), game.player);
+                hand.setInsurance(false);
+            }
         }
         printHandStatus(hand);
         if (dealerTurn) { // only check for a win once the dealer has had their turn
@@ -245,7 +262,7 @@ public class Game extends Helpers {
 
     /* Handles the result from the check win and gives/removes money from player
         @peram gameStatus: To determine what the payout/removal of money should be
-        @peran hand: To get the bet amount
+        @peram hand: To get the bet amount
     */
     public static void handleGameResult(int gameStatus, Hand hand) {
         if (gameStatus == 1 || gameStatus == 2) { // WIN
@@ -256,5 +273,16 @@ public class Game extends Helpers {
         } else {
             game.player.giveMoney(-1 * hand.getBet()); // LOSS
         }
+    }
+
+    /* Handles the result of the player getting insurance
+        @peram {int} bet: to determine what the payout/removal of money should be
+        @peram {boolean} dealerBlackjack: if the dealer got blackjack or not
+        @peram {Player} player: used to give the player money
+    */
+    public static void handleInsuranceResult(int bet, boolean dealerBlackjack, Player player) {
+        System.out.println(dealerBlackjack ? "You won your insurance" : "You lost your insurance");
+        int payout = (int)(dealerBlackjack ? bet/2 : bet/-2);
+        player.giveMoney(payout);
     }
 }
