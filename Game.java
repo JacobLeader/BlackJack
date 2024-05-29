@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 public class Game extends Helpers {
     private Player player;
+    private Deck deck;
     private static Game game;
     private static int gameCount;
     private static ArrayList<Hand> splitHands;
@@ -9,6 +10,7 @@ public class Game extends Helpers {
     public Game() {
         player = new Player(1000);
         splitHands = new ArrayList<>();
+        deck = new Deck();
         gameCount = 0;
     }
 
@@ -25,17 +27,16 @@ public class Game extends Helpers {
         while(gameCount == 0 || game.player.askPlayAgain()) {
             if (gameCount > 0) {clearConsole();}
             System.out.println("                            --- NEW GAME ---");
-            Deck deck = new Deck();
             Hand hand = new Hand(); // contains the bets & cards
-            
-            hand.setBet(game.player); // goes into a loop until the player gives a valid bet amount (money >= bet)
+            // game.deck.shuffleDeck(); Going to leave shuffling out to enable card counting if the player would like
+            hand.setBet(game.player);
 
             clearConsole();
             
             //  --- GAME START --- 
-            dealCard("Dealer", hand, deck);
-            dealCard("Player", hand, deck);
-            dealCard("Player", hand, deck);
+            dealCard("Dealer", hand, game.deck);
+            dealCard("Player", hand, game.deck);
+            dealCard("Player", hand, game.deck);
             // dealCustomCards(hand); // Used for testing
             System.out.println();
             printHandStatus(hand);
@@ -45,7 +46,7 @@ public class Game extends Helpers {
                 continue;
             }
 
-            gameMechanism(hand, deck, true);
+            gameMechanism(hand, game.deck, true);
 
             gameCount++;
         }
@@ -184,9 +185,9 @@ public class Game extends Helpers {
     public static void dealCard(String who, Hand hand, Deck deck) {
         Card card = deck.getCard();
         if (who.equalsIgnoreCase("Player")) {
-            hand.givePlayerCard(card);
+            hand.givePlayerCard(deck.putIntoDeck(card));
         } else {
-            hand.giveDealerCard(card);
+            hand.giveDealerCard(deck.putIntoDeck(card));
         }
         System.out.println((who.equals("Player") ? "You" : who) + " got a " + handleCard(card.getValue()) + " of " + card.getSuit());
     }
