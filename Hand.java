@@ -4,6 +4,7 @@ public class Hand extends Helpers {
     // this represents each round of the game
     // used to handle bets
     private int bet;
+    private boolean hasInsurance;
     private ArrayList<Card> playerCards;
     private ArrayList<Card> dealerCards;
 
@@ -12,6 +13,7 @@ public class Hand extends Helpers {
         playerCards = new ArrayList<>();
         dealerCards = new ArrayList<>();
         bet = 0;
+        hasInsurance = false;
     }
 
     /* Hand object Constructor to constrol exactly whats in it, used for split
@@ -101,7 +103,7 @@ public class Hand extends Helpers {
             }
             return true;
         }
-        System.out.println("You can only double down with two cards.");
+        System.out.println("Error: You can only double down with two cards.");
         return false;
     }
 
@@ -110,16 +112,18 @@ public class Hand extends Helpers {
         if (playerCards.size() == 2 && playerCards.get(0).getValue() == playerCards.get(1).getValue()){
             return true;
         }
-        System.out.println("You cannot split at this time.");
+        System.out.println("Error: You can only split with two cards of equal value.");
         return false;
     }
 
-    // Checks if the player got a Blackjack, loops looking for an ace & a ten card (face card or 10)
-    public boolean isBlackjack() {
+    /* Checks if the player got a Blackjack, loops looking for an ace & a ten card (face card or 10)
+        @peram {String} who: player or dealer, who's hand to check for a blackjack
+    */
+    public boolean isBlackjack(String who) {
         boolean hasAce = false;
         boolean hasTenOrFace = false;
     
-        for (Card card : playerCards) {
+        for (Card card : who.equalsIgnoreCase("player") ? playerCards : dealerCards) {
             int value = card.getValue();
             if (value == 1) {
                 hasAce = true;
@@ -128,5 +132,33 @@ public class Hand extends Helpers {
             }
         }
         return hasAce && hasTenOrFace;
+    }
+
+    /* Checks if the player can get insurance (dealers first card must be an ace)
+       Player puts half of their original bet down on insurance
+        @peram {int} bet: the bet amount on the hand, added to itself /2 then compared to the player's money
+        @peram {int} playerMoney: the amount of money that the player has, used to check if the player has enough money
+    */
+    public boolean canGetInsurance(int bet, int playerMoney) {
+        if (dealerCards.size() == 1 && dealerCards.get(0).getValue() == 1) {
+            if (bet + (bet/2) > playerMoney) {
+                System.out.println("Error: Insufficient Funds");
+                return false;
+            }
+            return true;
+        }
+        System.out.println("Error: You can get insurance when the dealer has one ace face up");
+        return false;
+    }
+
+    // Hand object hasInsurance getter method
+    public boolean hasInsurance() {
+        return hasInsurance;
+    }
+    /* Hand object hasInsurance setter method
+        @peram {boolean} insurance: if the player should or shouldn't have insurance
+    */ 
+    public void setInsurance(boolean insurance) {
+        hasInsurance = insurance;
     }
 }
