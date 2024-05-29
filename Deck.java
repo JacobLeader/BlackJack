@@ -4,13 +4,13 @@ public class Deck {
     ArrayList<Card> deck = new ArrayList<Card>();
     String[] suits = {"Spades", "Hearts", "Diamonds", "Clubs"};
 
-    // Constructor
+    // Constructor for Deck object
     public Deck() {
         createDeck();
         shuffleDeck();
     }
 
-    // Creates a new deck 
+    // Creates a new deck with nested loops
     public void createDeck() {
         for (String suit: suits) {
             for (int i = 1; i <= 13; i++) {
@@ -19,10 +19,12 @@ public class Deck {
         }
     }
 
+    // Uses the Collections class to shuffle the deck
     public void shuffleDeck() {
         Collections.shuffle(deck);
     }
 
+    // Getter method for a card from the deck instance
     // Deck is shuffled, so we can just grab the first card, than remove it so there are no cards dealt twice
     public Card getCard() {
         return deck.remove(0);

@@ -3,14 +3,16 @@ public class Player extends Helpers {
     int money;
     Scanner scanner;
 
-    // Constructor
+    /* Player object Constructor
+        @peram {int} gMoney: how much money the player starts with
+    */
     public Player(int gMoney) {
         money = gMoney;
         System.out.println("You have $" + money);
         scanner = new Scanner(System.in);
     }
 
-    // Gets what move the player wants to make
+    // Gets what move the player wants to make, in a loop to ensure a valid move
     public int getMove() {
         /*
             Stand: 0
@@ -47,7 +49,9 @@ public class Player extends Helpers {
         }
     }
     
-    // Gets the amount the player wants to bet
+    /* Gets the amount the player wants to bet with a scanner, in loop to ensure valid input
+        @peram {String} betType: The name of the bet that the player is making
+    */
     public int getBetInput(String betType) {
         while (true) {
             System.out.println("Please place the amount you would like to bet on " + betType);
@@ -62,16 +66,20 @@ public class Player extends Helpers {
         }
     }
 
-    // Gives the player money
+    /* Changes the players money
+        @peram {int} amount: how much the player gets (can be negative to remove money)
+    */
     public void giveMoney(int amount){
         money = money + amount;
         System.out.println("You have $" + money);
     }
 
+    // Player Object money getter method
     public int getMoney(){
         return money;
     }
 
+    // Shows the possible moves
     public void showOptions() {
         System.out.println("====================================\n" +
                            "|          Blackjack Moves         |\n" +
@@ -84,7 +92,7 @@ public class Player extends Helpers {
                            "====================================");
     }
 
-    // Asks the player if they want to continue or exit
+    // Asks the player if they want to continue or exit the game
     public boolean askPlayAgain() {
         System.out.println("Would you like to play again (y/n):");
         return scanner.nextLine().equalsIgnoreCase("y") ? true : false;

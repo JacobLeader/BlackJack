@@ -1,35 +1,29 @@
 import java.util.ArrayList;
-@SuppressWarnings("unused")
 public class Game extends Helpers {
-    // private Deck deck; 
     private Player player;
-    private Dealer dealer;
-    private static Hand hand;
     private static Game game;
     private static int gameCount;
     private static ArrayList<Hand> splitHands;
 
-
-    // Constructor
+    // Game object Constructor
     public Game() {
         player = new Player(1000);
-        dealer = new Dealer();
         splitHands = new ArrayList<>();
         gameCount = 0;
     }
 
     // TODO Card counting cheat code 
     // TODO Stats about game play: games played, win ratio, luck factor, net profit
+    // TODO blackjack payout, not 21
     
     // Main game loop
     public static void main(String [] args) {
-        int move;
         game = new Game();
+        game.player.showOptions();
 
         // Each loop represents a round/hand, gameCount == 0 needs to be infront of askPlayAgain so it checks first
         while(gameCount == 0 || game.player.askPlayAgain()) {
-            move = 1;
-            clearConsole();
+            if (gameCount > 0) {clearConsole();}
             System.out.println("                            --- NEW GAME ---");
             Deck deck = new Deck();
             Hand hand = new Hand(); // contains the bets & cards
@@ -42,7 +36,7 @@ public class Game extends Helpers {
             dealCard("Dealer", hand, deck);
             dealCard("Player", hand, deck);
             dealCard("Player", hand, deck);
-            // dealPair(hand);
+            // dealPair(hand); // Used for debugging split
             System.out.println();
             printHandStatus(hand);
 
@@ -52,7 +46,9 @@ public class Game extends Helpers {
         }
     }
 
-    // Checks to see if player won, 0 = loss, 1 = win, 2 = 21, 3 = tie
+    /* Checks to see if player won, 0 = loss, 1 = win, 2 = 21, 3 = tie
+        @peram hand: to get player & dealer hand values
+    */
     public static int checkWin(Hand hand) {
         int playerVal = hand.getPlayerValue();
         int dealerVal = hand.getDealerValue();
@@ -81,12 +77,17 @@ public class Game extends Helpers {
         }
     }
 
-    // Checks if player has busted
+    /* Checks if player has busted
+        @peram hand: to get the player's hand value
+    */
     public static boolean checkBust(Hand hand){
         return hand.getPlayerValue() > 21;
     }
 
-    // Handles the players turn
+    /* Handles the player's turn 
+        @peram hand: to pass into methods, set/get the player's bet
+        @peram deck: to pass into methods
+    */
     public static int playerTurn(Hand hand, Deck deck) {
         int move = 1;
         move = game.player.getMove();
@@ -111,7 +112,7 @@ public class Game extends Helpers {
             return 1; // gets a new move, like hitting but no actual hit
         }
         if (move == 3 && hand.canSplit()) {
-            split(hand, deck);
+            split(hand);
             for (int i = 0; i < splitHands.size(); i++) {
                 System.out.println("Your are now playing split #" + (i+1));
                 printHandStatus(splitHands.get(i));
@@ -127,27 +128,27 @@ public class Game extends Helpers {
         return move;
     }
 
-    // Prints out what cards the player and dealer have 
+    /* Prints out the hand value and what cards the player and dealer have 
+        @peram hand: to get player and dealer cards and hand values
+    */
     public static void printHandStatus(Hand hand){
-        // System.out.println("Your hand value is " + hand.getPlayerValue());
-        // System.out.println("Dealer's hand value is " + hand.getDealerValue());
         System.out.println("Player has a value of " + hand.getPlayerValue() + " with:");
-        for (Card card : hand.getCards("player")){
+        for (Card card : hand.getPlayerCards()){
             System.out.println("    " + handleCard(card.getValue()) + " of " + card.getSuit());
         }
         
-
         System.out.println();
 
         System.out.println("Dealer has a value of " + hand.getDealerValue() + " with:");
-        for (Card card : hand.getCards("dealer")){
+        for (Card card : hand.getDealerCards()){
             System.out.println("    " + handleCard(card.getValue()) + " of " + card.getSuit());
         }
         System.out.println();
-        
     }
 
-    // For print statement to tell user which card they got
+    /* To interperate the face and value cards
+        @peram value: used to tell what card it is
+    */ 
     public static String handleCard(int value) {
         if (value == 1) {
             return "Ace";
@@ -164,10 +165,14 @@ public class Game extends Helpers {
         return "" + value;
     }
 
-    // Gives a card to the given 'who' input (Player, Dealer)
+    /* Gives a card to the given 'who' input (Player or Dealer)
+        @peram who: to determine who to give card to, player or dealer
+        @peram hand: to give player or dealer that card
+        @peram deck: to get a card from the deck
+    */
     public static void dealCard(String who, Hand hand, Deck deck) {
         Card card = deck.getCard();
-        if (who.equals("Player")) {
+        if (who.equalsIgnoreCase("Player")) {
             hand.givePlayerCard(card);
         } else {
             hand.giveDealerCard(card);
@@ -175,7 +180,7 @@ public class Game extends Helpers {
         System.out.println((who.equals("Player") ? "You" : who) + " got a " + handleCard(card.getValue()) + " of " + card.getSuit());
     }
 
-    // For testing split
+    // For testing split, deals two same cards
     public static void dealPair(Hand hand) {
         Card card1 = new Card(10, "Hearts");
         Card card2= new Card(10, "Clubs");
@@ -184,8 +189,10 @@ public class Game extends Helpers {
         hand.givePlayerCard(card2);
     }
 
-    // Creates split hands by using the custom hand constructor
-    public static void split(Hand hand, Deck deck) {
+    /* Creates split hands by using the custom hand constructor 
+        @peram hand: to pass player and dealer cards into the Hand constructor
+    */
+    public static void split(Hand hand) {
         Hand hand1 = new Hand(hand.getPlayerCards().get(0), hand.getDealerCards(), hand.getBet());
         // dealCard("player", hand1, deck);
 
@@ -198,13 +205,14 @@ public class Game extends Helpers {
     }
 
     /* The player's turn, than the dealers turn, than checks to see the result of the game
+        @peram hand, deck: passed into methods
         @peram dealerTurn If the dealer should take their turn, used for split
     */
     public static void gameMechanism(Hand hand, Deck deck, boolean dealerTurn) {
         int move = 1;
         int gameStatus = 0;
 
-        // playerTurn
+        // Player's Turn
         while (move == 1) {
             move = playerTurn(hand, deck);
             if (checkBust(hand)) {
@@ -213,7 +221,6 @@ public class Game extends Helpers {
                 return;
             }
         }
-        System.out.println("Dealers Turn Now");
         // Dealer's turn
         while (hand.getDealerValue() < 17 && dealerTurn) {
             dealCard("Dealer", hand, deck);
@@ -225,6 +232,10 @@ public class Game extends Helpers {
         }
     }
 
+    /* Handles the result from the check win and gives/removes money from player
+        @peram gameStatus: To determine what the payout/removal of money should be
+        @peran hand: To get the bet amount
+    */
     public static void handleGameResult(int gameStatus, Hand hand) {
         if (gameStatus == 1 || gameStatus == 2) {
             int payout = gameStatus == 1 ? hand.getBet() : 3 * (hand.getBet() / 2);

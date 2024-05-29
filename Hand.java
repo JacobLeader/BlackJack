@@ -7,14 +7,18 @@ public class Hand extends Helpers {
     private ArrayList<Card> playerCards;
     private ArrayList<Card> dealerCards;
 
-    // Constructor
+    // Hand object Constructor, initializes player & dealer cards & bet instance variables
     public Hand() {
         playerCards = new ArrayList<>();
         dealerCards = new ArrayList<>();
         bet = 0;
     }
 
-    // Constructor where you can constrol exactly whats in it, used for split
+    /* Hand object Constructor to constrol exactly whats in it, used for split
+        @peram {Card} playerCard: to add the one card to the new player hand instance
+        @peram {ArrayList<Card>} gDealerCards: to keep the dealers cards the same
+        @peram {int} gBet: to keep the bet the same
+    */ 
     public Hand(Card playerCard, ArrayList<Card> gDealerCards, int gBet) {
         playerCards = new ArrayList<>();
         playerCards.add(playerCard);
@@ -22,12 +26,9 @@ public class Hand extends Helpers {
         bet = gBet;
     }
 
-    // Adds or subtracts amount to change
-    public void addToBet(int amount) {
-        bet += amount;
-    }
-
-    // Used first to get a valid bet from the player
+    /* Used to get a valid bet from the player
+        @peram {Player} player: to use the getMoney & getBetInput from player instance
+    */
     public void setBet(Player player) {
         int gBet;
         int money = player.getMoney();
@@ -45,46 +46,53 @@ public class Hand extends Helpers {
         }
     }
 
-    // Overloaded method used for doubling down
+    /* Hand object bet setter method
+        @peram {int} gBet: the amount to set the bet to
+    */
     public void setBet(int gBet) {
         bet = gBet;
     }
+
+    // Hand object bet getter method
     public int getBet() {
         return bet;
     }
 
+    // Hand object player cards getter method
     public ArrayList<Card> getPlayerCards() {
         return playerCards;
-    }             
+    }            
+     // Hand object dealer cards getter method
     public ArrayList<Card> getDealerCards() {
         return dealerCards;
     }
 
+    // Gets the value of the player's hand, uses helper method and passes private instance of the player's cards
     public int getPlayerValue() {
         return getHandValue(playerCards);
     }
+     // Gets the value of the dealer's hand, uses helper method and passes private instance of the dealer's cards
     public int getDealerValue() {
         return getHandValue(dealerCards);
     }
 
+    /* Adds a card to the player's arraylist of cards
+        @peram {Card} card: the card added to the player's arraylist
+    */
     public void givePlayerCard(Card card) {
         playerCards.add(card);
     }
+    /* Adds a card to the dealers's arraylist of cards
+        @peram {Card} card: the card added to the dealers's arraylist
+    */
     public void giveDealerCard(Card card) {
         dealerCards.add(card);
     }
 
-    // Returns the hand that someone has (player or dealer)
-    public ArrayList<Card> getCards(String who) {
-        if (who.equals("player")) {
-            return playerCards;
-        }
-        if (who.equals("dealer")) {
-            return dealerCards;
-        }
-        return new ArrayList<Card>();
-    }
-
+    /* Checks if the player can double down (must have only 2 cards & significant funds)
+        @peram {int} bet: the bet amount on the hand, doubled then compared to the player's money
+        @peram {int} playerMoney: the amount of money that the player has, used to check if the player has enough money
+    */
     public boolean canDoubleDown(int bet, int playerMoney) {
         if (playerCards.size() == 2) {
             return true;
@@ -97,7 +105,7 @@ public class Hand extends Helpers {
         return false;
     }
 
-    // Checks if the player can split
+    // Checks if the player can split (must have only 2 cards & same value cards)
     public boolean canSplit() {
         if (playerCards.size() == 2 && playerCards.get(0).getValue() == playerCards.get(1).getValue()){
             return true;

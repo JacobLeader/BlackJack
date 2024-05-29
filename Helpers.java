@@ -1,14 +1,15 @@
 import java.util.ArrayList;
 public class Helpers {
 
-    // gets the value of the arraylist of cards passed into it
+    /* gets the value of the arraylist of cards passed into it
+        @peram {ArrayList<Card>} cards: indexed and values are summed
+    */
     public int getHandValue(ArrayList<Card> cards) {
         // straight forward other than aces
         int value = 0;
         int aceCount = 0;
         int tempValue;
         for (Card card : cards) {
-            // value = (value + card.getValue() ? card.getValue() < 10  ? card.getValue() != 14 : aces++)
             tempValue = card.getValue();
             if (tempValue == 1) { // Ace
                 value += 11;
@@ -27,6 +28,7 @@ public class Helpers {
         return value;
     }
 
+    // Clears console
     public static void clearConsole() {
         System.out.print("\033[H\033[2J");
     }
