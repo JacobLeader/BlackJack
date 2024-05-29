@@ -29,4 +29,12 @@ public class Deck {
     public Card getCard() {
         return deck.remove(0);
     }
+
+    /* Adds a card to the end of the deck instance variable ArrayList, returns the card so it can be used directly in giveCard methods 
+        @peram {Card} card: the card to add to the deck
+    */
+    public Card putIntoDeck(Card card) {
+        deck.add(card);
+        return card;
+    }
 }
