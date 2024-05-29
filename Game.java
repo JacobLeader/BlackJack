@@ -14,7 +14,6 @@ public class Game extends Helpers {
 
     // TODO Card counting cheat code 
     // TODO Stats about game play: games played, win ratio, luck factor, net profit
-    // TODO blackjack payout, not 21
     
     // Main game loop
     public static void main(String [] args) {
@@ -36,9 +35,14 @@ public class Game extends Helpers {
             dealCard("Dealer", hand, deck);
             dealCard("Player", hand, deck);
             dealCard("Player", hand, deck);
-            // dealPair(hand); // Used for debugging split
+            dealCustomCards(hand); // Used for debugging split
             System.out.println();
             printHandStatus(hand);
+
+            if (hand.isBlackjack()) {
+                handleGameResult(checkWin(hand), hand);
+                continue;
+            }
 
             gameMechanism(hand, deck, true);
 
@@ -60,13 +64,15 @@ public class Game extends Helpers {
         // if dealer busts, and player is still alive
         else if (dealerVal > 21) {
             System.out.println("Dealer Bust!");
-            return (playerVal < 21) ? 1 : 2; // if player value is below 21, return win, else return 21
+            System.out.print(hand.isBlackjack() ? "Player got Blackjack!\n" : "");
+            return hand.isBlackjack() ? 2 : 1; // if player got a blackjack, return 2, else return a win(1)
         }
         // if both player and dealer are alive
         else {
             if (playerVal > dealerVal) {
                 System.out.println("Player wins, with a " + playerVal);
-                return 1; // player wins
+                System.out.print(hand.isBlackjack() ? "Player got Blackjack!\n" : "");
+                return hand.isBlackjack() ? 2 : 1; // player wins, check for a blackjack
             } else if (playerVal < dealerVal) {
                 System.out.println("Dealer wins, with a " + dealerVal);
                 return 0; // player loses
@@ -180,10 +186,15 @@ public class Game extends Helpers {
         System.out.println((who.equals("Player") ? "You" : who) + " got a " + handleCard(card.getValue()) + " of " + card.getSuit());
     }
 
-    // For testing split, deals two same cards
-    public static void dealPair(Hand hand) {
+    // For testing specific scenarios
+    public static void dealCustomCards(Hand hand) {
+        // Test split
         Card card1 = new Card(10, "Hearts");
         Card card2= new Card(10, "Clubs");
+
+        // Test blackjack
+        // Card card1 = new Card(1, "Hearts");
+        // Card card2= new Card(10, "Clubs");
 
         hand.givePlayerCard(card1);
         hand.givePlayerCard(card2);
@@ -237,13 +248,13 @@ public class Game extends Helpers {
         @peran hand: To get the bet amount
     */
     public static void handleGameResult(int gameStatus, Hand hand) {
-        if (gameStatus == 1 || gameStatus == 2) {
-            int payout = gameStatus == 1 ? hand.getBet() : 3 * (hand.getBet() / 2);
+        if (gameStatus == 1 || gameStatus == 2) { // WIN
+            int payout = gameStatus == 1 ? hand.getBet() : (int)(hand.getBet() * 1.5);
             game.player.giveMoney(payout);
-        } else if (gameStatus == 3) {
+        } else if (gameStatus == 3) { // TIE
             game.player.giveMoney(0);
         } else {
-            game.player.giveMoney(-1 * hand.getBet());
+            game.player.giveMoney(-1 * hand.getBet()); // LOSS
         }
     }
 }
