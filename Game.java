@@ -9,15 +9,22 @@ public class Game extends Helpers {
     // Game object Constructor
     public Game() {
         player = new Player(1000);
-        splitHands = new ArrayList<>();
         deck = new Deck();
         gameCount = 0;
     }
 
-    // TODO Card counting cheat code 
+    // TODO FIX SPLIT
+    // TODO Card counting cheat code, suggest move & say why
+    // TODO Big ascii font for EVERYTHING
+    // TODO this is your 5th miss input, figure it out!!! look at the moves!!!
+    // TODO better card showing (test visual cards)
     // TODO put the cards back into the deck
     // TODO Stats about game play: games played, win ratio, luck factor, net profit, correct move percentage
-    
+    // TODO Taunting messages on big bets (Use time), "I hope your not nervous", "This is X% of your money", "What if you lose...", "Ok ready...", "Wait, ok now"
+    // TODO show progress in terms of git history
+    // TODO get more money after you are out: sell your house, sell your kidney, use a simple algo where if sentance contains "house" then thats the option chosen
+    // TODO option to ask computer to explain in detail why you won or lost (ask dealer to explain)
+    // TODO surrender
     // Main game loop
     public static void main(String [] args) {
         game = new Game();
@@ -28,6 +35,7 @@ public class Game extends Helpers {
             if (gameCount > 0) {clearConsole();}
             System.out.println("                            --- NEW GAME ---");
             Hand hand = new Hand(); // contains the bets & cards
+            splitHands = new ArrayList<>();
             // game.deck.shuffleDeck(); Going to leave shuffling out to enable card counting if the player would like
             hand.setBet(game.player);
 
@@ -35,9 +43,9 @@ public class Game extends Helpers {
             
             //  --- GAME START --- 
             dealCard("Dealer", hand, game.deck);
-            dealCard("Player", hand, game.deck);
-            dealCard("Player", hand, game.deck);
-            // dealCustomCards(hand); // Used for testing
+            // dealCard("Player", hand, game.deck);
+            // dealCard("Player", hand, game.deck);
+            dealCustomCards(hand); // Used for testing
             System.out.println();
             printHandStatus(hand);
 
@@ -98,7 +106,7 @@ public class Game extends Helpers {
     */
     public static int playerTurn(Hand hand, Deck deck) {
         int move = 1;
-        move = game.player.getMove();
+        move = game.player.getMove(hand);
         
         if (move == 0) { // Stand
             return 0;
@@ -120,12 +128,7 @@ public class Game extends Helpers {
             return 1; // gets a new move, like hitting but no actual hit
         }
         if (move == 3 && hand.canSplit()) {
-            split(hand);
-            for (int i = 0; i < splitHands.size(); i++) {
-                System.out.println("Your are now playing split #" + (i+1));
-                printHandStatus(splitHands.get(i));
-                gameMechanism(splitHands.get(i), deck, i == splitHands.size() - 1); // only have dealer turn on the last split
-            }
+            return 3; //!!!!
         }
         else if (move == 3) {
             return 1; // gets a new move, like a hit happened
@@ -195,25 +198,27 @@ public class Game extends Helpers {
     // For testing specific scenarios
     public static void dealCustomCards(Hand hand) {
         // Test split
-        // Card card1 = new Card(10, "Hearts");
-        // Card card2= new Card(10, "Clubs");
+        Card card1 = new Card(5, "Hearts");
+        Card card2= new Card(5, "Clubs");
 
         // Test blackjack
         // Card card1 = new Card(1, "Hearts");
         // Card card2= new Card(10, "Clubs");
 
-        // hand.givePlayerCard(card1);
-        // hand.givePlayerCard(card2);
+        hand.givePlayerCard(card1);
+        hand.givePlayerCard(card2);
 
         // Test insurance
-        Card card = new Card(1, "Hearts");
-        hand.giveDealerCard(card);
+        // Card card = new Card(1, "Hearts");
+        // hand.giveDealerCard(card);
     }
 
     /* Creates split hands by using the custom hand constructor 
         @peram hand: to pass player and dealer cards into the Hand constructor
+        @peram deck: to pass into gameMechanism() function
+
     */
-    public static void split(Hand hand) {
+    public static void split(Hand hand, Deck deck) {
         Hand hand1 = new Hand(hand.getPlayerCards().get(0), hand.getDealerCards(), hand.getBet());
         // dealCard("player", hand1, deck);
 
@@ -223,6 +228,14 @@ public class Game extends Helpers {
         splitHands.add(hand1);
         splitHands.add(hand2);
 
+        for (int i = 0; i < splitHands.size(); i++) {
+            System.out.println("Your are now playing split #" + (i+1));
+            printHandStatus(splitHands.get(i));
+            gameMechanism(splitHands.get(i), deck, i == splitHands.size() - 1 && !checkBust(splitHands.get(i))); // only have dealer turn on the last split & when the player didnt bust
+        }
+
+        handleGameResult(checkWin(splitHands.get(0)), hand); // only for first split, cause the second one gets checked since it passes the dealerTurn condition
+        System.out.println("--SPLIT OVER--");
     }
 
     /* The player's turn, than the dealers turn, than checks to see the result of the game
@@ -233,6 +246,8 @@ public class Game extends Helpers {
         int move = 1;
         int gameStatus = 0;
 
+        System.out.println("--GAME MECHANISM STARTING--");
+
         // Player's Turn
         while (move == 1) {
             move = playerTurn(hand, deck);
@@ -242,12 +257,21 @@ public class Game extends Helpers {
                     hand.setInsurance(false);
                 }
                 gameStatus = checkWin(hand);
+                System.out.println("--HANDLING GAME RESULT--");
                 handleGameResult(gameStatus, hand);
                 return;
             }
         }
+        if (move == 3) { // split
+            split(hand, deck);
+             return; // dont reach dealers turn from original call
+        }
+
+        System.out.println("--DEALER TURN STARTING--");
+
         // Dealer's turn
-        while (hand.getDealerValue() < 17 && dealerTurn) {
+        while (hand.getDealerValue() < 17 && dealerTurn && !checkBust(hand)) {
+            printHandStatus(hand);
             dealCard("Dealer", hand, deck);
             if (hand.hasInsurance()) {
                 handleInsuranceResult(hand.getBet(), hand.isBlackjack("dealer"), game.player);
@@ -255,6 +279,7 @@ public class Game extends Helpers {
             }
         }
         printHandStatus(hand);
+
         if (dealerTurn) { // only check for a win once the dealer has had their turn
             gameStatus = checkWin(hand);
             handleGameResult(gameStatus, hand);
@@ -276,7 +301,7 @@ public class Game extends Helpers {
         }
     }
 
-    /* Handles the result of the player getting insurance
+    /* Handles the result of the player getting insurance, insurance pays out 2:1 if the dealer has Blackjack
         @peram {int} bet: to determine what the payout/removal of money should be
         @peram {boolean} dealerBlackjack: if the dealer got blackjack or not
         @peram {Player} player: used to give the player money
