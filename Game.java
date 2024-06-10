@@ -54,7 +54,7 @@ public class Game extends Helpers {
                 continue;
             }
 
-            gameMechanism(hand, game.deck, true);
+            gameMechanism(hand, game.deck, 0);
 
             gameCount++;
         }
@@ -80,11 +80,11 @@ public class Game extends Helpers {
         // if both player and dealer are alive
         else {
             if (playerVal > dealerVal) {
-                System.out.println("Player wins, with a " + playerVal);
+                System.out.println("Player wins, with a " + playerVal + ", beating the dealer's "+ dealerVal);
                 System.out.print(hand.isBlackjack("player") ? "Player got Blackjack!\n" : "");
                 return hand.isBlackjack("player") ? 2 : 1; // player wins, check for a blackjack
             } else if (playerVal < dealerVal) {
-                System.out.println("Dealer wins, with a " + dealerVal);
+                System.out.println("Dealer wins, with a " + dealerVal  + ", beating the player's "+ playerVal);
                 return 0; // player loses
             } else {
                 System.out.println("Tie");
@@ -127,7 +127,7 @@ public class Game extends Helpers {
         else if (move == 2) {
             return 1; // gets a new move, like hitting but no actual hit
         }
-        if (move == 3 && hand.canSplit()) {
+        if (move == 3 && hand.canSplit(hand.getBet(), game.player.getMoney())) {
             return 3; //!!!!
         }
         else if (move == 3) {
@@ -231,46 +231,39 @@ public class Game extends Helpers {
         for (int i = 0; i < splitHands.size(); i++) {
             System.out.println("Your are now playing split #" + (i+1));
             printHandStatus(splitHands.get(i));
-            gameMechanism(splitHands.get(i), deck, i == splitHands.size() - 1 && !checkBust(splitHands.get(i))); // only have dealer turn on the last split & when the player didnt bust
+            gameMechanism(splitHands.get(i), deck, i+1); // only have dealer turn on the last split & when the player didnt bust
         }
 
-        handleGameResult(checkWin(splitHands.get(0)), hand); // only for first split, cause the second one gets checked since it passes the dealerTurn condition
-        System.out.println("--SPLIT OVER--");
+        // System.out.println("--SPLIT OVER--");
     }
 
     /* The player's turn, than the dealers turn, than checks to see the result of the game
         @peram hand, deck: passed into methods
         @peram dealerTurn If the dealer should take their turn, used for split
+        @peram splitIndicator: Represents the split #, 0 = no split, 1 = 1st split hand, 2 = second split hand
     */
-    public static void gameMechanism(Hand hand, Deck deck, boolean dealerTurn) {
+    public static void gameMechanism(Hand hand, Deck deck, int splitIndicator) {
         int move = 1;
-        int gameStatus = 0;
 
-        System.out.println("--GAME MECHANISM STARTING--");
+        // System.out.println("--GAME MECHANISM STARTING--");
 
         // Player's Turn
         while (move == 1) {
             move = playerTurn(hand, deck);
-            if (checkBust(hand)) {
-                if (hand.hasInsurance()) { // TODO refactor this
-                    handleInsuranceResult(hand.getBet(), hand.isBlackjack("dealer"), game.player);
-                    hand.setInsurance(false);
-                }
-                gameStatus = checkWin(hand);
-                System.out.println("--HANDLING GAME RESULT--");
-                handleGameResult(gameStatus, hand);
-                return;
+            if (checkBust(hand) && hand.hasInsurance()) {
+                handleInsuranceResult(hand.getBet(), hand.isBlackjack("dealer"), game.player);
+                hand.setInsurance(false);
             }
         }
         if (move == 3) { // split
             split(hand, deck);
-             return; // dont reach dealers turn from original call
+            return; // dont reach dealers turn from original call
         }
 
-        System.out.println("--DEALER TURN STARTING--");
+        // System.out.println("--DEALER TURN STARTING--");
 
         // Dealer's turn
-        while (hand.getDealerValue() < 17 && dealerTurn && !checkBust(hand)) {
+        while (hand.getDealerValue() < 17 && splitIndicator % 2 == 0 && (!checkBust(hand) || splitIndicator == 2)) { // Dont wanna run this when the player already busted unless it matters for the first hand in a split
             printHandStatus(hand);
             dealCard("Dealer", hand, deck);
             if (hand.hasInsurance()) {
@@ -280,10 +273,16 @@ public class Game extends Helpers {
         }
         printHandStatus(hand);
 
-        if (dealerTurn) { // only check for a win once the dealer has had their turn
-            gameStatus = checkWin(hand);
-            handleGameResult(gameStatus, hand);
+        if (!checkBust(splitHands.get(0)) && splitIndicator == 2) { // once the dealer has had their turn
+            System.out.println("1st split hand result:");
+            handleGameResult(checkWin(splitHands.get(0)), splitHands.get(0));
         }
+        if (splitIndicator % 2 == 0) { // only check for a win once the dealer has had their turn (not split & 2nd split)
+            System.out.println(splitIndicator == 2 ? "2nd split hand result:" : "");
+            handleGameResult(checkWin(hand), hand);
+            return; // so it doesnt hit the next section
+        }
+
     }
 
     /* Handles the result from the check win and gives/removes money from player
