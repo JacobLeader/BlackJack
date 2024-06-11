@@ -28,7 +28,7 @@ public class Hand extends Helpers {
         bet = gBet;
     }
 
-    /* Used to get a valid bet from the player
+    /* Used to get a valid bet from the player, loops until valid (0 < bet <= Player's money)
         @peram {Player} player: to use the getMoney & getBetInput from player instance
     */
     public void setBet(Player player) {
@@ -108,11 +108,16 @@ public class Hand extends Helpers {
     }
 
     // Checks if the player can split (must have only 2 cards & same value cards)
-    public boolean canSplit() {
-        if (playerCards.size() == 2 && playerCards.get(0).getValue() == playerCards.get(1).getValue()){
+    public boolean canSplit(int bet, int playerMoney) {
+        if (playerCards.size() == 2 && playerCards.get(0).getValue() == playerCards.get(1).getValue() && bet * 2 < playerMoney) {
             return true;
         }
-        System.out.println("Error: You can only split with two cards of equal value.");
+        else if (bet * 2 > playerMoney) {
+            System.out.println("Error: Insufficient funds, you must be able to place an equal bet on your split hand.\nYour bet is $" + bet + ", but you only have funds of $" + playerMoney);
+        }
+        else {
+            System.out.println("Error: You can only split with two cards of equal value.");
+        }
         return false;
     }
 
