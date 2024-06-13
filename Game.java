@@ -1,3 +1,4 @@
+// Game object Constructor
 import java.util.ArrayList;
 public class Game extends Helpers {
     private Player player;
@@ -5,18 +6,21 @@ public class Game extends Helpers {
     private static Game game;
     private static int gameCount;
     private static ArrayList<Hand> splitHands;
-
-    // Game object Constructor
+    private int cardCountValue;
+    private boolean isCardCounting;
+    
     public Game() {
         player = new Player(1000);
         deck = new Deck();
         gameCount = 0;
+        cardCountValue = 0;
+        isCardCounting = false;
     }
 
-    // TODO FIX SPLIT
     // TODO Card counting cheat code, suggest move & say why
     // TODO Big ascii font for EVERYTHING
     // TODO this is your 5th miss input, figure it out!!! look at the moves!!!
+    // TODO Fix show cards on double down
     // TODO better card showing (test visual cards)
     // TODO put the cards back into the deck
     // TODO Stats about game play: games played, win ratio, luck factor, net profit, correct move percentage
@@ -43,9 +47,9 @@ public class Game extends Helpers {
             
             //  --- GAME START --- 
             dealCard("Dealer", hand, game.deck);
-            // dealCard("Player", hand, game.deck);
-            // dealCard("Player", hand, game.deck);
-            dealCustomCards(hand); // Used for testing
+            dealCard("Player", hand, game.deck);
+            dealCard("Player", hand, game.deck);
+            // dealCustomCards(hand); // Used for testing
             System.out.println();
             printHandStatus(hand);
 
@@ -128,7 +132,7 @@ public class Game extends Helpers {
             return 1; // gets a new move, like hitting but no actual hit
         }
         if (move == 3 && hand.canSplit(hand.getBet(), game.player.getMoney())) {
-            return 3; //!!!!
+            return 3;
         }
         else if (move == 3) {
             return 1; // gets a new move, like a hit happened
@@ -148,16 +152,14 @@ public class Game extends Helpers {
     */
     public static void printHandStatus(Hand hand){
         System.out.println("Player has a value of " + hand.getPlayerValue() + " with:");
-        for (Card card : hand.getPlayerCards()){
-            System.out.println("    " + handleCard(card.getValue()) + " of " + card.getSuit());
-        }
+        Deck.printCards(hand.getPlayerCards());
         
         System.out.println();
 
         System.out.println("Dealer has a value of " + hand.getDealerValue() + " with:");
-        for (Card card : hand.getDealerCards()){
-            System.out.println("    " + handleCard(card.getValue()) + " of " + card.getSuit());
-        }
+        Deck.printCards(hand.getDealerCards());
+        System.out.println();
+        System.out.println("Card count is: " + (game.cardCountValue > 0 ? "+" : "") + game.cardCountValue);
         System.out.println();
     }
 
@@ -188,11 +190,12 @@ public class Game extends Helpers {
     public static void dealCard(String who, Hand hand, Deck deck) {
         Card card = deck.getCard();
         if (who.equalsIgnoreCase("Player")) {
-            hand.givePlayerCard(deck.putIntoDeck(card));
+            hand.givePlayerCard(card);
         } else {
-            hand.giveDealerCard(deck.putIntoDeck(card));
+            hand.giveDealerCard(card);
         }
         System.out.println((who.equals("Player") ? "You" : who) + " got a " + handleCard(card.getValue()) + " of " + card.getSuit());
+        game.cardCountValue += getCardCountValue(card);
     }
 
     // For testing specific scenarios
@@ -264,16 +267,17 @@ public class Game extends Helpers {
 
         // Dealer's turn
         while (hand.getDealerValue() < 17 && splitIndicator % 2 == 0 && (!checkBust(hand) || splitIndicator == 2)) { // Dont wanna run this when the player already busted unless it matters for the first hand in a split
-            printHandStatus(hand);
             dealCard("Dealer", hand, deck);
             if (hand.hasInsurance()) {
                 handleInsuranceResult(hand.getBet(), hand.isBlackjack("dealer"), game.player);
                 hand.setInsurance(false);
             }
         }
-        printHandStatus(hand);
+        if (!checkBust(hand)) {
+            printHandStatus(hand);
+        }
 
-        if (!checkBust(splitHands.get(0)) && splitIndicator == 2) { // once the dealer has had their turn
+        if (splitIndicator == 2 && !checkBust(splitHands.get(0))) { // once the dealer has had their turn, splitIndicator check must be first or there will be an out of bounds error
             System.out.println("1st split hand result:");
             handleGameResult(checkWin(splitHands.get(0)), splitHands.get(0));
         }
