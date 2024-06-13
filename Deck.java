@@ -31,6 +31,7 @@ public class Deck {
     }
 
     /* Adds a card to the end of the deck instance variable ArrayList, returns the card so it can be used directly in giveCard methods 
+        !Not used right now so that card counting can work properly
         @peram {Card} card: the card to add to the deck
     */
     public Card putIntoDeck(Card card) {
@@ -38,6 +39,7 @@ public class Deck {
         return card;
     }
 
+    // Gets the lines to make up cards as an arraylist
     public static ArrayList<String> getCardLines(Card card) {
         int value = card.getValue();
         String suit = card.getSuit();
@@ -78,6 +80,7 @@ public class Deck {
         return cardLines;
     }
 
+    // gets the face cards from a value inputed or just a string from an int
     public static String getValueAsString(int value) {
         if (value == 1) {
             return "A";
@@ -92,6 +95,7 @@ public class Deck {
         }
     }
 
+    // return symbol from text
     public static String getSuitSymbol(String suit) {
         if ("Hearts".equals(suit)) {
             return "♥";
@@ -106,18 +110,19 @@ public class Deck {
         }
     }
 
+    // Goes layer by layer down, building the cards of each list of lines, nested for loops to print out all the lines, row by row
     public static void printCards(List<Card> cards) {
         ArrayList<ArrayList<String>> allCardLines = new ArrayList<>();
         for (Card card : cards) {
             allCardLines.add(getCardLines(card));
         }
 
-        // Go layer by layer down, building the cards of each list of lines
         for (int i = 0; i < allCardLines.get(0).size(); i++) {
             for (ArrayList<String> cardLines : allCardLines) {
                 System.out.print(cardLines.get(i) + " ");
             }
             System.out.println();
         }
+
     }
 }
