@@ -13,7 +13,9 @@ public class Player extends Helpers {
     }
 
     // Gets what move the player wants to make, in a loop to ensure a valid move
-    public int getMove() {
+    // @peram {Game} game: game instance so the printHandStatus() method can be called 
+    // @peram {Hand} hand: hand instance so the printHandStatus() method can be called, which takes the hand
+    public int getMove(Hand hand) {
         /*
             Stand: 0
             Hit: 1
@@ -45,6 +47,7 @@ public class Player extends Helpers {
             else {
                 System.out.println(input + " is not a valid move, please refer to the options below.");
                 showOptions();
+                Game.printHandStatus(hand);
             }
         }
     }
