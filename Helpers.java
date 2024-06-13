@@ -32,4 +32,17 @@ public class Helpers {
     public static void clearConsole() {
         System.out.print("\033[H\033[2J");
     }
+
+    // for the card counting feature, returns the Hi-Lo value of the card to be added to the count
+    public static int getCardCountValue(Card card) {
+        if (card.getValue() <= 6) {
+            return 1;
+        }
+        else if (card.getValue() >= 6 && card.getValue() <= 9) {
+            return 0;
+        }
+        else {
+            return -1;
+        }
+    }
 }
