@@ -129,12 +129,14 @@ public class Game extends Helpers {
             return 2;
         }
         else if (move == 2) {
+            printHandStatus(hand);
             return 1; // gets a new move, like hitting but no actual hit
         }
         if (move == 3 && hand.canSplit(hand.getBet(), game.player.getMoney())) {
             return 3;
         }
         else if (move == 3) {
+            printHandStatus(hand);
             return 1; // gets a new move, like a hit happened
         }
         if (move == 4) { // Insurance: If dealer's visible card is an Ace, player can buy insurance, which is a side bet that pays out 2:1 if dealer gets Blackjack 
