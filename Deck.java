@@ -1,13 +1,13 @@
 import java.util.*;
 public class Deck {
     // New instance for each game played
-    ArrayList<Card> deck = new ArrayList<Card>();
-    String[] suits = {"Spades", "Hearts", "Diamonds", "Clubs"};
+    ArrayList<Card> deck = new ArrayList<Card>(); // deck arraylist
+    String[] suits = {"Spades", "Hearts", "Diamonds", "Clubs"}; // possible suits
 
     // Constructor for Deck object
     public Deck() {
-        createDeck();
-        shuffleDeck();
+        createDeck(); // creates a new deck
+        shuffleDeck(); // shuffles the deck
     }
 
     // Creates a new deck with nested loops
