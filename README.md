@@ -1,8 +1,6 @@
                              
 --- NOTES ---
-
-
-
+Card Counting Resource: https://wizardofodds.com/games/blackjack/card-counting/high-low/
 
 
 --- RULES ---
