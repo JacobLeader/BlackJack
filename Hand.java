@@ -10,10 +10,10 @@ public class Hand extends Helpers {
 
     // Hand object Constructor, initializes player & dealer cards & bet instance variables
     public Hand() {
-        playerCards = new ArrayList<>();
-        dealerCards = new ArrayList<>();
-        bet = 0;
-        hasInsurance = false;
+        playerCards = new ArrayList<>(); // holds the cards that the player has
+        dealerCards = new ArrayList<>(); // holds the cards that the dealer has
+        bet = 0; // holds the bet amount for that one hand
+        hasInsurance = false; // if the player has an insurance bet
     }
 
     /* Hand object Constructor to constrol exactly whats in it, used for split
@@ -98,7 +98,7 @@ public class Hand extends Helpers {
     public boolean canDoubleDown(int bet, int playerMoney) {
         if (playerCards.size() == 2) {
             if (bet * 2 > playerMoney) {
-                System.out.println("Error: Insufficient Funds");
+                System.out.println("Error: Insufficient Funds, you only have $" + playerMoney + " which is less than $" + bet * 2);
                 return false;
             }
             return true;
@@ -112,11 +112,11 @@ public class Hand extends Helpers {
         if (playerCards.size() == 2 && playerCards.get(0).getValue() == playerCards.get(1).getValue() && bet * 2 < playerMoney) {
             return true;
         }
-        else if (bet * 2 > playerMoney) {
-            System.out.println("Error: Insufficient funds, you must be able to place an equal bet on your split hand.\nYour bet is $" + bet + ", but you only have funds of $" + playerMoney);
+        else if (playerCards.get(0).getValue() != playerCards.get(1).getValue()){
+            System.out.println("Error: You can only split with two cards of equal value.");
         }
         else {
-            System.out.println("Error: You can only split with two cards of equal value.");
+            System.out.println("Error: Insufficient funds, you must be able to place an equal bet on your split hand.\nYour bet is $" + bet + ", but you only have funds of $" + playerMoney);
         }
         return false;
     }
@@ -147,7 +147,7 @@ public class Hand extends Helpers {
     public boolean canGetInsurance(int bet, int playerMoney) {
         if (dealerCards.size() == 1 && dealerCards.get(0).getValue() == 1) {
             if (bet + (bet/2) > playerMoney) {
-                System.out.println("Error: Insufficient Funds");
+                System.out.println("Error: Insufficient Funds, you must have half of your original bet extra to put up for insurance.");
                 return false;
             }
             return true;
