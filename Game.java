@@ -1,5 +1,6 @@
 // Game object Constructor
 import java.util.ArrayList;
+
 public class Game extends Helpers {
     private Player player;
     private Deck deck;
@@ -7,22 +8,17 @@ public class Game extends Helpers {
     private static int gameCount;
     private static ArrayList<Hand> splitHands;
     private int cardCountValue;
-    private boolean isCardCounting;
     
     public Game() {
-        player = new Player(1000);
-        deck = new Deck();
-        gameCount = 0;
-        cardCountValue = 0;
-        isCardCounting = false;
+        player = new Player(1000); // the player instance, initialized with $1000 dollars
+        deck = new Deck(); // the same deck is used the whole time
+        gameCount = 0; // counts the games played
+        cardCountValue = 0; // the value gotten by card counting
     }
 
     // TODO Card counting cheat code, suggest move & say why
     // TODO Big ascii font for EVERYTHING
     // TODO this is your 5th miss input, figure it out!!! look at the moves!!!
-    // TODO Fix show cards on double down
-    // TODO better card showing (test visual cards)
-    // TODO put the cards back into the deck
     // TODO Stats about game play: games played, win ratio, luck factor, net profit, correct move percentage
     // TODO Taunting messages on big bets (Use time), "I hope your not nervous", "This is X% of your money", "What if you lose...", "Ok ready...", "Wait, ok now"
     // TODO show progress in terms of git history
@@ -31,13 +27,15 @@ public class Game extends Helpers {
     // TODO surrender
     // Main game loop
     public static void main(String [] args) {
+        clearConsole();
+        showMoneyASCII();
+
         game = new Game();
         game.player.showOptions();
-
+        
         // Each loop represents a round/hand, gameCount == 0 needs to be infront of askPlayAgain so it checks first
         while(gameCount == 0 || game.player.askPlayAgain()) {
             if (gameCount > 0) {clearConsole();}
-            System.out.println("                            --- NEW GAME ---");
             Hand hand = new Hand(); // contains the bets & cards
             splitHands = new ArrayList<>();
             // game.deck.shuffleDeck(); Going to leave shuffling out to enable card counting if the player would like
@@ -50,6 +48,7 @@ public class Game extends Helpers {
             dealCard("Player", hand, game.deck);
             dealCard("Player", hand, game.deck);
             // dealCustomCards(hand); // Used for testing
+
             System.out.println();
             printHandStatus(hand);
 
@@ -61,6 +60,10 @@ public class Game extends Helpers {
             gameMechanism(hand, game.deck, 0);
 
             gameCount++;
+
+            if (game.player.getMoney() <= 0) {
+                game.player.playerNeedsMoney();
+            }
         }
     }
 
@@ -249,8 +252,6 @@ public class Game extends Helpers {
     */
     public static void gameMechanism(Hand hand, Deck deck, int splitIndicator) {
         int move = 1;
-
-        // System.out.println("--GAME MECHANISM STARTING--");
 
         // Player's Turn
         while (move == 1) {
