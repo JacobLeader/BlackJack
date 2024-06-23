@@ -46,4 +46,15 @@ public class Helpers {
         }
     }
 
+    // prints the "BlackJack" text shown at the start of the game
+    public static void showMoneyASCII() {
+        System.out.println("  \t\t\t\t/$$$$$$$  /$$                     /$$          /$$$$$                     /$$      ");
+        System.out.println(" \t\t\t\t| $$__  $$| $$                    | $$         |__  $$                    | $$      ");
+        System.out.println(" \t\t\t\t| $$  \\ $$| $$  /$$$$$$   /$$$$$$$| $$   /$$      | $$  /$$$$$$   /$$$$$$$| $$   /$$");
+        System.out.println(" \t\t\t\t| $$$$$$$ | $$ |____  $$ /$$_____/| $$  /$$/      | $$ |____  $$ /$$_____/| $$  /$$/");
+        System.out.println(" \t\t\t\t| $$__  $$| $$  /$$$$$$$| $$      | $$$$$$/  /$$  | $$  /$$$$$$$| $$      | $$$$$$/ ");
+        System.out.println(" \t\t\t\t| $$  \\ $$| $$ /$$__  $$| $$      | $$_  $$ | $$  | $$ /$$__  $$| $$      | $$_  $$ ");
+        System.out.println(" \t\t\t\t| $$$$$$$/| $$|  $$$$$$$|  $$$$$$$| $$ \\  $$|  $$$$$$/|  $$$$$$$|  $$$$$$$| $$ \\  $$");
+        System.out.println(" \t\t\t\t|_______/ |__/ \\_______/ \\_______/|__/  \\__/ \\______/  \\_______/ \\_______/|__/  \\__/");
+    }
 }
