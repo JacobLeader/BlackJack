@@ -2,14 +2,22 @@ import java.util.Scanner;
 public class Player extends Helpers {
     int money;
     Scanner scanner;
+    boolean hasCar;
+    boolean hasPhone;
+    boolean hasHouse;
 
     /* Player object Constructor
         @peram {int} gMoney: how much money the player starts with
     */
     public Player(int gMoney) {
-        money = gMoney;
+        money = gMoney; // how much money the player starts with
         System.out.println("You have $" + money);
-        scanner = new Scanner(System.in);
+        scanner = new Scanner(System.in); // scanner to get input
+
+        // tracks if the player can sell their ____
+        hasCar = true; 
+        hasPhone = true;
+        hasHouse = true;
     }
 
     // Gets what move the player wants to make, in a loop to ensure a valid move
@@ -99,5 +107,46 @@ public class Player extends Helpers {
     public boolean askPlayAgain() {
         System.out.println("Would you like to play again (y/n):");
         return scanner.nextLine().equalsIgnoreCase("y") ? true : false;
+    }
+
+    // function to give the player more money, is called when the player has no money
+    public void playerNeedsMoney() {
+        System.out.println("\nYou are out of money.");
+        while (getMoney() <= 0) {
+            System.out.print("\nWhat are you going to sell: ");
+            if (hasCar) {
+                System.out.print("Your car(c), ");
+            }
+            if (hasHouse) {
+                System.out.print("Your house(h), ");
+            }
+            if (hasPhone) {
+                System.out.print("Your phone(p)");
+            }
+            System.out.println("");
+            String input = scanner.nextLine();
+            clearConsole();
+            if (input.equalsIgnoreCase("c") && hasCar) {
+                System.out.println("You sold you car for $30,000, taxis aren't that bad.");
+                giveMoney(30000);
+                hasCar = false;
+            }
+            else if (input.equalsIgnoreCase("h") && hasHouse) {
+                System.out.println("You sold you house for $1,000,000, hope you have a sleeping bag!");
+                giveMoney(1000000000);
+                hasHouse = false;
+            }
+            else if (input.equalsIgnoreCase("p") && hasPhone) {
+                System.out.println("You sold you phone for $500, did you really need it anyways?");
+                giveMoney(500);
+                hasPhone = false;
+            }
+            else {
+                System.out.println("Invalid Input, press enter to continue or q to quit");
+                if (scanner.nextLine().equalsIgnoreCase("q")) {
+                    System.exit(0);
+                } 
+            }
+        }
     }
 }
